@@ -9,6 +9,9 @@ def render_frame(surface, xcoordinate):
     pygame.draw.circle(surface, (250, 0, 0), (xcoordinate, 100), 20)
     flip()
 
+def clear_surface(surface):
+    surface.fill((0, 0, 0))
+
 def main():
     x = 1
     pygame.init()
@@ -22,6 +25,6 @@ def main():
 
         render_frame(surface, x)
         x += 1
-        surface.fill((0, 0, 0))
+        clear_surface(surface)
 
 main()
