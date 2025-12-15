@@ -5,17 +5,39 @@ def create_main_surface():
     screen_size = (1024, 768)
     return pygame.display.set_mode(screen_size)
 
-def render_frame(surface, xcoordinate):
-    pygame.draw.circle(surface, (250, 0, 0), (xcoordinate, 100), 20)
-    flip()
-
 def clear_surface(surface):
     surface.fill((0, 0, 0))
 
+class State:
+    def __init__(self):
+        self.xcoordinate = 0
+        self.ycoordinate = 0
+
+    def update(self):
+        pressed = pygame.key.get_pressed()
+
+        if pressed[pygame.K_LEFT]:
+            self.xcoordinate -= 2
+        if pressed[pygame.K_RIGHT]:
+            self.xcoordinate += 2
+        if pressed[pygame.K_UP]:
+            self.ycoordinate -= 2
+        if pressed[pygame.K_DOWN]:
+            self.ycoordinate += 2
+
+    def render(self, surface):
+        pygame.draw.circle(
+            surface,
+            (250, 0, 0),
+            (self.xcoordinate, self.ycoordinate),
+            20
+        )
+        flip()
+
 def main():
-    x = 1
     pygame.init()
     surface = create_main_surface()
+    state = State()
 
     running = True
     while running:
@@ -23,8 +45,11 @@ def main():
             if event.type == pygame.QUIT:
                 running = False
 
-        render_frame(surface, x)
-        x += 1
+        state.update()
+
         clear_surface(surface)
+        state.render(surface)
+
+    pygame.quit()
 
 main()
