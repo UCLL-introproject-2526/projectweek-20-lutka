@@ -28,13 +28,11 @@ def main():
 
     running = True
     while running:
-        # for event in event.get():
-        #     if event.type == QUIT:
-        #         running = False
-        #we voegen nog geen events toe aan de event queue dus ik heb dit even weggecomment tot we het gebruiken
-        
-        #pump verwerkt automatisch bepaalde events
-        event.pump()        
+
+        #als er een event op de queue van type QUIT is, dan gaan we stoppen met deze whilelus
+        for e in event.get():
+            if e.type == QUIT:
+                running = False     
 
         render_frame(surface, x)
         x += 1
