@@ -11,3 +11,5 @@ def create_main_surface():
 
         while True:
             pass  # Busy-wait for keyboard interrupt (Ctrl+C)
+
+print(create_main_surface())
