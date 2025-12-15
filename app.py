@@ -22,5 +22,6 @@ def main():
 
         render_frame(surface, x)
         x += 1
+        surface.fill((0, 0, 0))
 
 main()
