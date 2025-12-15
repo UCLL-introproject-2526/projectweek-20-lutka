@@ -1,4 +1,6 @@
 import pygame
+from pygame.display import flip
+
 def create_main_surface():
         # Initialize Pygame
         pygame.init()
@@ -12,4 +14,6 @@ def create_main_surface():
         while True:
             pass  # Busy-wait for keyboard interrupt (Ctrl+C)
 
-print(create_main_surface())
+surface = create_main_surface()
+pygame.draw.circle(surface, (250,0,0), (100,100), 20, 50)
+flip()
