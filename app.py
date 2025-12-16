@@ -54,7 +54,7 @@ def main():
         for e in event.get():
             if e.type == QUIT:
                 running = False
-            pygame.time.wait(60)
+            time.wait(60)
 
         state.update()
         
