@@ -6,7 +6,40 @@ window_width = 1024
 window_height = 768
 game_display = pygame.display.set_mode((window_width, window_height))
 
-bg_image = pygame.image.load('BASECOLOURbg.png')
+bg_image = pygame.image.load('hi.png')
+
+class Map():
+    def __init__(self):
+        self.Image = pygame.image.load("hi.png").convert()
+
+    def draw(self, game_display):
+        window_size = game_display.get_size()
+        map_size = self.Image.get_size()
+        x = max(0, min(map_size[0] - window_size[0], self.player.x - 200))
+        y = max(0, min(map_size[1] - window_size[1], self.player.y - 200))
+        return game_display.blit(self.Image, (-x, -y))
+
+
+class Player: 
+    def __init__(self, x, y):
+        time_passed = 0
+        map_size = self.Image.get_size()
+        self.x += (key[K_RIGHT] - key[K_LEFT]) * 500 * time_passed
+        self.y += (key[K_DOWN] - key[K_UP]) * 500 * time_passed
+        self.x = max(0, min(map_size[0]-20, self.x))
+        self.y = max(0, min(map_size[1]-20, self.y))
+
+    def draw(self, game_display, map_size):
+        window_size = game_display.get_size()
+        center = window_size[0] // 2, window_size[0] // 2
+
+        pos = [self.x, self.y]
+        for i in range(2):
+            if center[i] < pos[1] <= map_size[i]-center[i]:
+                pos[i] = center[i]
+            elif pos[1] > map_size[i] - center[i]:
+                 pos[i] = window_size[i] - map_size[i] + pos[i]
+        game_display.blit(bg_image, (int(pos[0]), int(pos[1])))
 
 
 class State:
@@ -56,9 +89,13 @@ def main():
             if e.type == QUIT:
                 running = False
 
-        state.update()
         clear_surface(surface)
+        state.update()
         state.render(surface)
 
+        Map.draw(game_display)
+        Player.draw(game_display, map.Image.get_size())
+
+    # time_passed = clock.tick() / 1000
 
 main()
