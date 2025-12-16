@@ -2,8 +2,8 @@ from pygame import *
 from gamestate import State
 
 # CONSTANTEN
-SCREEN_WIDTH = 1000
-SCREEN_HEIGHT = 500
+SCREEN_WIDTH = 1250
+SCREEN_HEIGHT = 700
 
 CIRCLE_RADIUS = 20
 SPEED = 5
