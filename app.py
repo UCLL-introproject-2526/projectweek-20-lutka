@@ -18,7 +18,7 @@ class Map():
         map_size = self.Image.get_size()
         x = max(0, min(map_size[0] - window_size[0], self.player.x - 200))
         y = max(0, min(map_size[1] - window_size[1], self.player.y - 200))
-        return game_display.blit(self.Image, (-x, -y))
+        game_display.blit(self.Image, (-x, -y))
 
 
 class Player: 
