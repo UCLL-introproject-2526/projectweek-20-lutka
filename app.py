@@ -1,5 +1,6 @@
 from pygame import *
 
+#klasse die de huidige staat van een object in de gamewereld bijhoudt
 class State:
     def __init__(self):
         self.xcoordinate = 0
@@ -52,7 +53,7 @@ def main():
         #als er een event op de queue van type QUIT is, dan gaan we stoppen met deze whilelus
         for e in event.get():
             if e.type == QUIT:
-                running = False     
+                running = False
 
         state.update()
         
