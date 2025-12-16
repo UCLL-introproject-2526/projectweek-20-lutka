@@ -1,13 +1,16 @@
 import pygame
 from pygame.display import flip
 
+
 def create_main_surface():
     screen_size = (1024, 768)
     return pygame.display.set_mode(screen_size)
 
+
 def render_frame(surface, xcoordinate):
     pygame.draw.circle(surface, (250, 0, 0), (xcoordinate, 100), 20)
     flip()
+
 
 def main():
     x = 1
@@ -22,5 +25,6 @@ def main():
 
         render_frame(surface, x)
         x += 1
+
 
 main()
