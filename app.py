@@ -47,6 +47,8 @@ def main():
 
     state = State()
 
+    clock = time.Clock()
+
     running = True
     while running:
 
@@ -54,7 +56,8 @@ def main():
         for e in event.get():
             if e.type == QUIT:
                 running = False
-            time.wait(60)
+            # wacht 60s
+            clock.tick(15)
 
         state.update()
         
