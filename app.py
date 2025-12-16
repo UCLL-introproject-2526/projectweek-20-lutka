@@ -1,4 +1,5 @@
 from pygame import *
+import pygame
 
 #klasse die de huidige staat van een object in de gamewereld bijhoudt
 class State:
@@ -61,4 +62,9 @@ def main():
         clear_surface(surface)
         state.render(surface)
 
+pygame.init()
+pygame.mixer.music.load("christmas-jazz-christmas-holiday-347485.mp3")
+pygame.mixer.music.play(-1)
+
 main()
+
