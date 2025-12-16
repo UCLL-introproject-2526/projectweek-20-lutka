@@ -2,8 +2,8 @@ from pygame import *
 from gamestate import State
 
 # CONSTANTEN
-SCREEN_WIDTH = 1200
-SCREEN_HEIGHT = 700
+SCREEN_WIDTH = 1024
+SCREEN_HEIGHT = 768
 
 CIRCLE_RADIUS = 20
 SPEED = 5
@@ -11,11 +11,6 @@ SPEED = 5
 RED = (225, 0, 0)
 BLACK = (0, 0, 0)
 
-window_width = 1024
-window_height = 768
-game_display = display.set_mode((window_width, window_height))
-
-bg_image = image.load('hi.png')
 
 class Map():
     def __init__(self, player):
@@ -25,17 +20,18 @@ class Map():
     def draw(self, game_display):
         window_size = game_display.get_size()
         map_size = self.Image.get_size()
-        x = max(0, min(map_size[0] - window_size[0], self.player.x - 200))
-        y = max(0, min(map_size[1] - window_size[1], self.player.y - 200))
+        x = max(0, min(map_size[0] - window_size[0], self.player.x - window_size[0] // 2))
+        y = max(0, min(map_size[1] - window_size[1], self.player.y - window_size[1] // 2))
         game_display.blit(self.Image, (-x, -y))
 
 
 class Player: 
-    def __init__(self, x, y):
-        time_passed = 0
+    def __init__(self, x, y, map_size):
         self.Image = image.load("sub.png").convert()
         self.x = x
         self.y = y
+        self.map_size = map_size
+        self.sprite_size = self.Image.get_size()
 
     def draw(self, game_display, map_size):
         window_size = game_display.get_size()
@@ -52,58 +48,46 @@ class Player:
     def process_key_input(self):
         pressed = key.get_pressed()
 
-        if pressed[K_LEFT]:
-            self.x -= 2
-        if pressed[K_RIGHT]:
-            self.x += 2
-        if pressed[K_UP]:
-            self.y -= 2
-        if pressed[K_DOWN]:
-            self.y += 2
+        # Borders
+        if pressed[K_LEFT] and self.x > 0:
+            self.x -= SPEED
+        if pressed[K_RIGHT] and self.x + self.sprite_size[0] < self.map_size[0]:
+            self.x += SPEED
+        if pressed[K_UP] and self.y > 0:
+            self.y -= SPEED
+        if pressed[K_DOWN] and self.y + self.sprite_size[1] < self.map_size[1]:
+            self.y += SPEED
 
 
-# MAAKT HET WINDOW
-def create_main_surface():
-    return display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
-
-
-def clear_surface(surface):
-    surface.blit(bg_image, (0, 0))
-
-
-# MAIN
 def main():
     init()
-    surface = create_main_surface()
+    game_display = display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
     clock = time.Clock()
-
-    # Startpositie cirkel (middelpunt)
-    x = 50
-    y = 50
 
     state = State()
 
-    p = Player(50, 50)
+    # Create map
+    bg_image = image.load('hi.png')
+    map_size = bg_image.get_size()
+    
+    # Create player with map size for boundary checking
+    p = Player(50, 50, map_size)
     m = Map(p)
     
     running = True
     while running:
-
         # Events
         for e in event.get():
             if e.type == QUIT:
                 running = False
 
-        clear_surface(surface)
-        
         # Process input
         p.process_key_input()
         
         # Draw everything
         m.draw(game_display)
         p.draw(game_display, m.Image.get_size())
-
-        state.render(surface)
+        state.render(game_display)
         
         display.flip()  
         clock.tick(60)  
