@@ -32,9 +32,6 @@ class State:
 def create_main_surface():
     screen_size = (1024, 768)
     return display.set_mode(screen_size)
-    
-    #flip kopieert de backbuffer naar de frontbuffer zie "Drawing a Circle"
-    display.flip()
 
 #maakt het scherm terug helemaal zwart
 def clear_surface(surface):
