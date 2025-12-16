@@ -2,7 +2,7 @@ from pygame import *
 from gamestate import State
 
 # CONSTANTEN
-SCREEN_WIDTH = 1250
+SCREEN_WIDTH = 1200
 SCREEN_HEIGHT = 700
 
 CIRCLE_RADIUS = 20
@@ -36,24 +36,31 @@ class Player:
         self.Image = image.load("sub.png").convert()
         self.x = x
         self.y = y
-        """
-        map_size = self.Image.get_size()
-        self.x += (key[K_RIGHT] - key[K_LEFT]) * 500 * time_passed
-        self.y += (key[K_DOWN] - key[K_UP]) * 500 * time_passed
-        self.x = max(0, min(map_size[0]-20, self.x))
-        self.y = max(0, min(map_size[1]-20, self.y))"""
 
     def draw(self, game_display, map_size):
         window_size = game_display.get_size()
-        center = window_size[0] // 2, window_size[0] // 2
+        center = window_size[0] // 2, window_size[1] // 2 
 
         pos = [self.x, self.y]
         for i in range(2):
-            if center[i] < pos[1] <= map_size[i]-center[i]:
+            if center[i] < pos[i] <= map_size[i] - center[i]: 
                 pos[i] = center[i]
-            elif pos[1] > map_size[i] - center[i]:
-                 pos[i] = window_size[i] - map_size[i] + pos[i]
+            elif pos[i] > map_size[i] - center[i]:
+                pos[i] = window_size[i] - map_size[i] + pos[i]
         game_display.blit(self.Image, (int(pos[0]), int(pos[1])))
+
+    def process_key_input(self):
+        pressed = key.get_pressed()
+
+        if pressed[K_LEFT]:
+            self.x -= 2
+        if pressed[K_RIGHT]:
+            self.x += 2
+        if pressed[K_UP]:
+            self.y -= 2
+        if pressed[K_DOWN]:
+            self.y += 2
+
 
 # MAAKT HET WINDOW
 def create_main_surface():
@@ -76,13 +83,11 @@ def main():
 
     state = State()
 
-    p = Player(50,50)
-
+    p = Player(50, 50)
     m = Map(p)
     
     running = True
     while running:
-        clock.tick(60)
 
         # Events
         for e in event.get():
@@ -90,11 +95,17 @@ def main():
                 running = False
 
         clear_surface(surface)
+        
+        # Process input
+        p.process_key_input()
+        
+        # Draw everything
         m.draw(game_display)
-
         p.draw(game_display, m.Image.get_size())
-        state.update(p)
 
         state.render(surface)
+        
+        display.flip()  
+        clock.tick(60)  
 
 main()
