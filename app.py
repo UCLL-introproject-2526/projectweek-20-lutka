@@ -60,5 +60,9 @@ def main():
         clear_surface(surface)
         state.render(surface)
 
+init()
+mixer.music.load("christmas-jazz-christmas-holiday-347485.mp3")
+mixer.music.play(-1)
 
 main()
+
