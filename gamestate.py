@@ -5,8 +5,9 @@ class State:
     def __init__(self):
         self.xcoordinate = 0
         self.ycoordinate = 0
-
-    def update(self):
+        self.xtime = 0 
+    
+    def process_key_input(self, state, key):
         pressed = key.get_pressed()
 
         if pressed[K_LEFT]:
@@ -20,11 +21,5 @@ class State:
             
     #maakt een nieuwe frame door over de oude te tekenen
     def render(self, surface):
-        draw.circle(
-            surface,
-            (250, 0, 0),
-            (self.xcoordinate, self.ycoordinate),
-            20
-        )
         #flip kopieert de backbuffer naar de frontbuffer zie "Drawing a Circle"
         display.flip()
