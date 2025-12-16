@@ -1,3 +1,4 @@
+from constants import *
 from pygame import *
 from gamestate import State
 

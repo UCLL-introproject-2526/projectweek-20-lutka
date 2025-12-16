@@ -1,3 +1,4 @@
+from constants import *
 from pygame import *
 
 #klasse die de huidige staat van een object in de gamewereld bijhoudt
