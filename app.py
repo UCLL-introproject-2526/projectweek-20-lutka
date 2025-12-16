@@ -1,16 +1,25 @@
 from pygame import *
-import pygame
+from gamestate import State
 
-pygame.init()
+# CONSTANTEN
+SCREEN_WIDTH = 1250
+SCREEN_HEIGHT = 700
+
+CIRCLE_RADIUS = 20
+SPEED = 5
+
+RED = (225, 0, 0)
+BLACK = (0, 0, 0)
+
 window_width = 1024
 window_height = 768
-game_display = pygame.display.set_mode((window_width, window_height))
+game_display = display.set_mode((window_width, window_height))
 
-bg_image = pygame.image.load('hi.png')
+bg_image = image.load('hi.png')
 
 class Map():
     def __init__(self, player):
-        self.Image = pygame.image.load("hi.png").convert()
+        self.Image = image.load("hi.png").convert()
         self.player = player
 
     def draw(self, game_display):
@@ -24,7 +33,7 @@ class Map():
 class Player: 
     def __init__(self, x, y):
         time_passed = 0
-        self.Image = pygame.image.load("sub.png").convert()
+        self.Image = image.load("sub.png").convert()
         self.x = x
         self.y = y
         """
@@ -46,51 +55,25 @@ class Player:
                  pos[i] = window_size[i] - map_size[i] + pos[i]
         game_display.blit(self.Image, (int(pos[0]), int(pos[1])))
 
-
-class State:
-    def __init__(self):
-        self.xcoordinate = 0
-        self.ycoordinate = 0
-
-    def update(self, player):
-        pressed = key.get_pressed()
-
-        if pressed[K_LEFT]:
-            self.xcoordinate -= 2
-            player.x -= 2
-        if pressed[K_RIGHT]:
-            self.xcoordinate += 2
-            player.x += 2
-        if pressed[K_UP]:
-            self.ycoordinate -= 2
-            player.y -= 2
-        if pressed[K_DOWN]:
-            self.ycoordinate += 2
-            player.y += 2
-
-    def render(self, surface):
-        """draw.circle(
-            surface,
-            (250, 0, 0),
-            (self.xcoordinate, self.ycoordinate),
-            20
-        )"""
-        display.update()
-        display.flip()
-
-
+# MAAKT HET WINDOW
 def create_main_surface():
-    screen_size = (1024, 768)
-    return display.set_mode(screen_size)
+    return display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 
 
 def clear_surface(surface):
     surface.blit(bg_image, (0, 0))
 
 
+# MAIN
 def main():
     init()
     surface = create_main_surface()
+    clock = time.Clock()
+
+    # Startpositie cirkel (middelpunt)
+    x = 50
+    y = 50
+
     state = State()
 
     p = Player(50,50)
@@ -99,6 +82,9 @@ def main():
     
     running = True
     while running:
+        clock.tick(60)
+
+        # Events
         for e in event.get():
             if e.type == QUIT:
                 running = False
@@ -110,7 +96,5 @@ def main():
         state.update(p)
 
         state.render(surface)
-
-    # time_passed = clock.tick() / 1000
 
 main()
