@@ -1,6 +1,8 @@
+import pygame
+import pygame.freetype
 from pygame import *
 
-
+# klasse die de timer bijhoudt
 class Timer:
     def __init__(self, max_time):
         self.max_time = max_time
@@ -32,6 +34,7 @@ class Timer:
         draw.rect(surface, (117, 171, 217),
                   (self.bar_x, self.bar_y,
                    current_width, self.bar_height))
+        
 
 
 # klasse die de huidige staat van een object in de gamewereld bijhoudt
@@ -40,7 +43,10 @@ class State:
         self.xcoordinate = 0
         self.ycoordinate = 0
 
-    def update(self):
+    def update(self, allow_input):
+        if not allow_input:
+            return
+
         pressed = key.get_pressed()
 
         if pressed[K_LEFT]:
@@ -73,32 +79,47 @@ def clear_surface(surface):
 def main():
     # initializeert al de pygame modules
     init()
-    # mixer.music.load("christmas-jazz-christmas-holiday-347485.mp3")
-    # mixer.music.play(-1)
+    pygame.freetype.init()
 
     surface = create_main_surface()
+    GAME_FONT1 = pygame.font.SysFont("New Times Roman", 70, pygame.font.Font.bold)
+    GAME_FONT2 = pygame.font.SysFont("Arial", 30)
 
     state = State()
-    
     running = True
+    t = Timer(10)
 
     while running:
-        rechthoek = Rect(700, 50, 200, 40)
-        draw.rect(surface, (173, 216, 255), rechthoek)
-        display.flip()
-        timer = USEREVENT +1
-        time.set_timer(timer, 1000)
-        timer_sec = 10
-        # als er een event op de queue van type QUIT is, dan gaan we stoppen met deze whilelus
         for e in event.get():
             if e.type == QUIT:
                 running = False
-            timer.handle_event(e)
 
-        state.update()
+            if t.time_left == 0 and e.type == KEYDOWN and e.key == K_RETURN:
+                time.set_timer(t.TIMER_EVENT, 0)
+                state = State()
+                t = Timer(10)
+
+            t.handle_event(e)
+
+        allow_input = t.time_left > 0
+        state.update(allow_input)
+
         clear_surface(surface)
+
         state.render(surface)
-        timer.render(surface)
+        t.render(surface)
+
+        if t.time_left == 0:
+            text_surface1 = GAME_FONT1.render(
+                "Game Over",
+                True, (250, 0, 0)
+            )
+            surface.blit(text_surface1, (355, 300))
+            text_surface2 = GAME_FONT2.render(
+                "Geen zuurstof! Druk ENTER om opnieuw te beginnen.",
+                True, (250, 250, 250)
+            )
+            surface.blit(text_surface2, (225, 380))
 
         display.flip()
 
