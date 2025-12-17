@@ -17,13 +17,17 @@ class State:
             self.rect.height - 16,
         )
 
+        self.facing_right = True
+
     def update(self):
         pressed = key.get_pressed()
 
         if pressed[K_LEFT]:
             self.rect.x -= 2
+            self.facing_right = False
         if pressed[K_RIGHT]:
             self.rect.x += 2
+            self.facing_right = True
         if pressed[K_UP]:
             self.rect.y -= 2
         if pressed[K_DOWN]:
@@ -33,7 +37,11 @@ class State:
 
     # maakt een nieuwe frame door over de oude te tekenen
     def render(self, surface):
-        surface.blit(submarine_image, self.rect)
+        if self.facing_right:
+            surface.blit(submarine_image, self.rect)
+        else:
+            flipped_img = transform.flip(submarine_image, True, False)
+            surface.blit(flipped_img, self.rect)
         # flip kopieert de backbuffer naar de frontbuffer zie "Drawing a Circle"
         display.flip()
 
