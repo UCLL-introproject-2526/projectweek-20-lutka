@@ -10,13 +10,9 @@ def main():
     clock = time.Clock()
 
     state = State()
-
-    # Create map
-    bg_image = image.load('hi.png')
-    map_size = bg_image.get_size()
     
     # Create player with map size for boundary checking
-    player_position = Vector2(50,50)
+    player_position = Vector2(START.x,START.y)
     p = Player(player_position)
     m = Map(p)
     world_matrix = m.generate_world()
