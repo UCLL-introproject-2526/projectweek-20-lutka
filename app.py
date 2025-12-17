@@ -1,27 +1,39 @@
 from pygame import *
 
+submarine_image = image.load("submarine.png")
+submarine_image = transform.scale(submarine_image, (80, 40))
+
 
 # klasse die de huidige staat van een object in de gamewereld bijhoudt
 class State:
     def __init__(self):
-        self.xcoordinate = 0
-        self.ycoordinate = 0
+        self.rect = submarine_image.get_rect()
+        self.rect.topleft = (10, 10)
+
+        self.hitbox = Rect(
+            self.rect.x + 10,
+            self.rect.y + 8,
+            self.rect.width - 20,
+            self.rect.height - 16,
+        )
 
     def update(self):
         pressed = key.get_pressed()
 
         if pressed[K_LEFT]:
-            self.xcoordinate -= 2
+            self.rect.x -= 2
         if pressed[K_RIGHT]:
-            self.xcoordinate += 2
+            self.rect.x += 2
         if pressed[K_UP]:
-            self.ycoordinate -= 2
+            self.rect.y -= 2
         if pressed[K_DOWN]:
-            self.ycoordinate += 2
+            self.rect.y += 2
+
+        self.hitbox.topleft = (self.rect.x + 10, self.rect.y + 8)
 
     # maakt een nieuwe frame door over de oude te tekenen
     def render(self, surface):
-        draw.circle(surface, (250, 0, 0), (self.xcoordinate, self.ycoordinate), 20)
+        surface.blit(submarine_image, self.rect)
         # flip kopieert de backbuffer naar de frontbuffer zie "Drawing a Circle"
         display.flip()
 
