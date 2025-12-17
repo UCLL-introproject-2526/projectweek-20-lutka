@@ -3,36 +3,47 @@ from constants import *
 from pygame import *
 
 class Map():
-    def __init__(self, player):
+    def __init__(self, player, game_display):
         bg_image = image.load("achtergrond gradient.png").convert()
         self.background_image = transform.scale(bg_image, (CELL_SIZE*COLS, CELL_SIZE*ROWS))
         self.map_size = self.background_image.get_size()
         self.player = player
+
+        self.window_size = game_display.get_size()
+
+    def tracking_player(self):
+        x = max(0, min(self.map_size[0] - self.window_size[0], self.player.pos.x - self.window_size[0] // 2))
+        y = max(0, min(self.map_size[1] - self.window_size[1], self.player.pos.y - self.window_size[1] // 2))
+        return Vector2(x,y)
+
 # zorgt dat de camera de sub volgt
-    def draw(self, game_display, matrix):
-
-        window_size = game_display.get_size()
-
-        x = max(0, min(self.map_size[0] - window_size[0], self.player.pos.x - window_size[0] // 2))
-        y = max(0, min(self.map_size[1] - window_size[1], self.player.pos.y - window_size[1] // 2))
-
-        game_display.blit(self.background_image, (-x, -y))
-        Map.draw_world(game_display, matrix, x, y)
-
-    def draw_world(game_display, matrix, x, y):
+    def draw(self, game_display, blocks_list):
+        position = Map.tracking_player(self)
+        game_display.blit(self.background_image, (-position.x, -position.y))
         
+        Map.draw_world(self, game_display, blocks_list)
+
+    def get_world_rects(self, matrix):
+        position = Map.tracking_player(self)
         current_cell_origin = Vector2(0,0)
-        
+        rect_list = []
+
         for i in range(ROWS):    
             for j in range(COLS):
                 if matrix[i][j] == 1:
-                    rock = Rect(current_cell_origin.x-x, current_cell_origin.y-y, CELL_SIZE, CELL_SIZE)
-                    draw.rect(game_display, GREY, rock)
-                
+                    rock = Rect(current_cell_origin.x-position.x, current_cell_origin.y-position.y, CELL_SIZE, CELL_SIZE)
+                    rect_list.append(rock)
                 current_cell_origin.x += CELL_SIZE
-            
             current_cell_origin.x = 0
             current_cell_origin.y += CELL_SIZE
+
+        return rect_list        
+
+
+    def draw_world(self, game_display, blocks_list):
+    
+        for rock in blocks_list:    
+            draw.rect(game_display, GREY, rock)
 
 
     def generate_world(self):
