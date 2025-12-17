@@ -7,31 +7,50 @@ submarine_image = transform.scale(submarine_image, (80, 40))
 # klasse die de huidige staat van een object in de gamewereld bijhoudt
 class State:
     def __init__(self):
-        self.rect = submarine_image.get_rect()
-        self.rect.topleft = (10, 10)
-
+        self.pos = Vector2(10, 10)
+        self.rect = submarine_image.get_rect(topleft=(int(self.pos.x), int(self.pos.y)))
         self.hitbox = Rect(
             self.rect.x + 10,
             self.rect.y + 8,
             self.rect.width - 20,
             self.rect.height - 16,
         )
+        self.rect.topleft = (10, 10)
+        self.velocity = Vector2(0, 0)
+        self.acceleration = 0.1
+        self.max_speed = 2
+        self.friction = 0.05
 
         self.facing_right = True
 
     def update(self):
         pressed = key.get_pressed()
+        direction = Vector2(0, 0)
 
         if pressed[K_LEFT]:
-            self.rect.x -= 2
+            direction.x = -1
             self.facing_right = False
         if pressed[K_RIGHT]:
-            self.rect.x += 2
+            direction.x = 1
             self.facing_right = True
         if pressed[K_UP]:
-            self.rect.y -= 2
+            direction.y = -1
         if pressed[K_DOWN]:
-            self.rect.y += 2
+            direction.y = 1
+
+        if direction.length() != 0:
+            direction = direction.normalize()
+
+        self.velocity += direction * self.acceleration
+
+        if direction.length() == 0:
+            self.velocity *= 1 - self.friction
+
+        if self.velocity.length() > self.max_speed:
+            self.velocity = self.velocity.normalize() * self.max_speed
+
+        self.pos += self.velocity
+        self.rect.topleft = (int(self.pos.x), int(self.pos.y))
 
         self.hitbox.topleft = (self.rect.x + 10, self.rect.y + 8)
 
