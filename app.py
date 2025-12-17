@@ -1,4 +1,5 @@
 from pygame import *
+import pygame
 
 
 # klasse die de huidige staat van een object in de gamewereld bijhoudt
@@ -47,18 +48,32 @@ def main():
     surface = create_main_surface()
 
     state = State()
-
     running = True
     while running:
-
+        rechthoek = Rect(700, 50, 200, 40)
+        draw.rect(surface, (173, 216, 255), rechthoek)
+        display.flip()
+        timer = USEREVENT +1
+        time.set_timer(timer, 1000)
+        timer_sec = 10
         # als er een event op de queue van type QUIT is, dan gaan we stoppen met deze whilelus
         for e in event.get():
             if e.type == QUIT:
                 running = False
             time.wait(60)
+            if e.type == timer:
+                if timer_sec > 0:
+                    timer_sec -= 1
+                else:
+                    pygame.time.set_timer(timer, 0)
+                    e.type = QUIT
 
+        # if rechthoek.width > 0:
+        #     if timer != 0:
+        #         rechthoek.width -= 20       
+
+        
         state.update()
-
         clear_surface(surface)
         state.render(surface)
 
