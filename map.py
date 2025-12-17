@@ -3,12 +3,13 @@ from pygame import *
 
 class Map():
     def __init__(self, player):
-        self.Image = image.load("hi.png").convert()
+        self.image = image.load("hi.png").convert()
+        self.map_size = self.image.get_size()
         self.player = player
 
+# zorgt dat de camera de sub volgt
     def draw(self, game_display):
         window_size = game_display.get_size()
-        map_size = self.Image.get_size()
-        x = max(0, min(map_size[0] - window_size[0], self.player.x - window_size[0] // 2))
-        y = max(0, min(map_size[1] - window_size[1], self.player.y - window_size[1] // 2))
-        game_display.blit(self.Image, (-x, -y))
+        x = max(0, min(self.map_size[0] - window_size[0], self.player.pos.x - window_size[0] // 2))
+        y = max(0, min(self.map_size[1] - window_size[1], self.player.pos.y - window_size[1] // 2))
+        game_display.blit(self.image, (-x, -y))

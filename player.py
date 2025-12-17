@@ -2,18 +2,18 @@ from constants import *
 from pygame import *
 
 class Player: 
-    def __init__(self, x, y, map_size):
+    def __init__(self, vector):
         self.Image = image.load("sub.png").convert()
-        self.x = x
-        self.y = y
-        self.map_size = map_size
+        # position coords
+        self.pos = Vector2(vector.x,vector.y)
+
         self.sprite_size = self.Image.get_size()
 
     def draw(self, game_display, map_size):
         window_size = game_display.get_size()
         center = window_size[0] // 2, window_size[1] // 2 
 
-        pos = [self.x, self.y]
+        pos = [self.pos.x, self.pos.y]
         for i in range(2):
             if center[i] < pos[i] <= map_size[i] - center[i]: 
                 pos[i] = center[i]
@@ -21,16 +21,16 @@ class Player:
                 pos[i] = window_size[i] - map_size[i] + pos[i]
         game_display.blit(self.Image, (int(pos[0]), int(pos[1])))
 
-    def process_key_input(self):
+    def process_key_input(self, map_size):
         pressed = key.get_pressed()
 
-        # Borders
-        if pressed[K_LEFT] and self.x > 0:
-            self.x -= SPEED
-        if pressed[K_RIGHT] and self.x + self.sprite_size[0] < self.map_size[0]:
-            self.x += SPEED
-        if pressed[K_UP] and self.y > 0:
-            self.y -= SPEED
-        if pressed[K_DOWN] and self.y + self.sprite_size[1] < self.map_size[1]:
-            self.y += SPEED
+        # Borders #borders moeten ergensanders gecheckt worden
+        if pressed[K_LEFT] and self.pos.x > 0:
+            self.pos.x -= SPEED
+        if pressed[K_RIGHT] and self.pos.x + self.sprite_size[0] < map_size[0]:
+            self.pos.x += SPEED
+        if pressed[K_UP] and self.pos.y > 0:
+            self.pos.y -= SPEED
+        if pressed[K_DOWN] and self.pos.y + self.sprite_size[1] < map_size[1]:
+            self.pos.y += SPEED
 

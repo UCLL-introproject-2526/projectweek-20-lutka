@@ -5,9 +5,9 @@ from pygame import *
 class State:
     def __init__(self):
         self.xcoordinate = 0
-        self.ycoordinate = 0
-        self.xtime = 0 
-            
+        self.ycoordinate = 0 # later mss beide vervangen door vector
+        # self.xtime = 0 
+        
     #maakt een nieuwe frame door over de oude te tekenen
     def render(self, surface):
         #flip kopieert de backbuffer naar de frontbuffer zie "Drawing a Circle"

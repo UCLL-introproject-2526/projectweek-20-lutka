@@ -16,7 +16,8 @@ def main():
     map_size = bg_image.get_size()
     
     # Create player with map size for boundary checking
-    p = Player(50, 50, map_size)
+    player_position = Vector2(50,50)
+    p = Player(player_position)
     m = Map(p)
     
     running = True
@@ -27,11 +28,11 @@ def main():
                 running = False
 
         # Process input
-        p.process_key_input()
+        p.process_key_input(m.map_size)
         
         # Draw everything
         m.draw(game_display)
-        p.draw(game_display, m.Image.get_size())
+        p.draw(game_display, m.map_size)
         state.render(game_display)
         
         display.flip()  
