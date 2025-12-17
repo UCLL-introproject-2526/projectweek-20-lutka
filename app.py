@@ -85,7 +85,12 @@ def main():
     clock = time.Clock()
 
     while running:
-
+        rechthoek = Rect(700, 50, 200, 40)
+        draw.rect(surface, (173, 216, 255), rechthoek)
+        display.flip()
+        timer = USEREVENT +1
+        time.set_timer(timer, 1000)
+        timer_sec = 10
         # als er een event op de queue van type QUIT is, dan gaan we stoppen met deze whilelus
         for e in event.get():
             if e.type == QUIT:
@@ -93,7 +98,6 @@ def main():
             timer.handle_event(e)
 
         state.update()
-
         clear_surface(surface)
         state.render(surface)
         timer.render(surface)
