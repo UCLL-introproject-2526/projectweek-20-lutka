@@ -6,10 +6,12 @@ from player import Player
 
 def main():
     init()
-    mixer.music.load("christmas-jazz-christmas-holiday-347485.mp3")
-    mixer.music.play(-1)
 
-    surface = create_main_surface()
+    # mixer.music.load("christmas-jazz-christmas-holiday-347485.mp3")
+    # mixer.music.play(-1)
+
+    game_display = display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+    clock = time.Clock()
 
     state = State()
     
@@ -25,12 +27,17 @@ def main():
         for e in event.get():
             if e.type == QUIT:
                 running = False
-            time.wait(60)
 
-        state.update()
+        # Process input
+        p.process_key_input(m.map_size)
+        
+        # Draw everything
+        m.draw(game_display, world_matrix)
+        p.draw(game_display, m.map_size)
+        state.render(game_display)
+        
+        display.flip()  
+        clock.tick(60)  
 
-        clear_surface(surface)
-        state.render(surface)
 
 main()
-
