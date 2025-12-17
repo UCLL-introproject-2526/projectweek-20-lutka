@@ -8,3 +8,10 @@ SPEED = 5
 
 RED = (225, 0, 0)
 BLACK = (0, 0, 0)
+GREY = (100,100,100)
+
+CELL_SIZE = 64
+
+ROWS = 100
+COLS = 30
+WATER_CHANCE = 3

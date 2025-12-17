@@ -19,6 +19,7 @@ def main():
     player_position = Vector2(50,50)
     p = Player(player_position)
     m = Map(p)
+    world_matrix = m.generate_world()
     
     running = True
     while running:
@@ -31,7 +32,7 @@ def main():
         p.process_key_input(m.map_size)
         
         # Draw everything
-        m.draw(game_display)
+        m.draw(game_display, world_matrix)
         p.draw(game_display, m.map_size)
         state.render(game_display)
         
