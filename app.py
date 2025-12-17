@@ -79,10 +79,8 @@ def main():
     surface = create_main_surface()
 
     state = State()
-    timer = Timer(60)
-
+    
     running = True
-    clock = time.Clock()
 
     while running:
         rechthoek = Rect(700, 50, 200, 40)
@@ -103,7 +101,6 @@ def main():
         timer.render(surface)
 
         display.flip()
-        clock.tick(60)
 
 
 main()
