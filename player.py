@@ -26,6 +26,7 @@ class Player:
 
 
     def draw(self, game_display, map_size):
+
         window_width, window_height = game_display.get_size()
         cam_x = max(0, min(self.pos.x - window_width // 2, map_size[0] - window_width))
         cam_y = max(0, min(self.pos.y - window_height // 2, map_size[1] - window_height))
@@ -38,7 +39,7 @@ class Player:
             flipped_img = transform.flip(self.submarine_image, True, False)
             game_display.blit(flipped_img, draw_pos)
 
-    def process_key_input(self, map_size):
+    def process_key_input(self, map_size, block_list):
         pressed = key.get_pressed()
         direction = Vector2(0, 0)
 
@@ -67,7 +68,7 @@ class Player:
         self.pos.x = max(0, min(self.pos.x, map_size[0] - self.rect.width))
         self.pos.y = max(0, min(self.pos.y, map_size[1] - self.rect.height))
 
-        if self.pos.x == 0 or self.pos.x == map_size[0] - self.rect.width:
+        if self.pos.x == 0 or self.pos.x == map_size[0] - self.rect.width or self.hitbox.collidelist(block_list) == -1:
             self.velocity.x = 0
         if self.pos.y == 0 or self.pos.y == map_size[1] - self.rect.height:
             self.velocity.y = 0

@@ -47,7 +47,7 @@ def main():
 
         # Process input only if game is not over
         if t.time_left > 0:
-            p.process_key_input(m.map_size)
+            p.process_key_input(m.map_size, blocks)
         
         #blocks
         blocks = m.get_world_rects(world_matrix)
