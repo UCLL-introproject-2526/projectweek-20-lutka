@@ -2,6 +2,7 @@ from pygame import *
 
 SCREEN_WIDTH = 1024
 SCREEN_HEIGHT = 768
+GAME_DISPLAY = display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 
 CIRCLE_RADIUS = 20
 SPEED = 5

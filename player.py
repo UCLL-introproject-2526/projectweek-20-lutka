@@ -25,29 +25,37 @@ class Player:
         self.friction = 0.05
         self.facing_right = True
 
-    def updated_hitbox(self):
-        return self.submarine_image.get_rect(topleft=(int(self.pos.x), int(self.pos.y)))
+    def updated_hitbox(self, map_size):
+
+        window_width, window_height = GAME_DISPLAY.get_size()
+        cam_x = max(0, min(self.pos.x - window_width // 2, map_size[0] - window_width))
+        cam_y = max(0, min(self.pos.y - window_height // 2, map_size[1] - window_height))
+        draw_pos = self.pos - Vector2(cam_x, cam_y)
+
+        return self.submarine_image.get_rect(topleft=(draw_pos.x, draw_pos.y))
 
 
-    def draw(self, game_display, map_size):
+    def draw(self, map_size):
 
-        draw.rect(game_display, RED, Player.updated_hitbox(self))
+        draw.rect(GAME_DISPLAY, RED, Player.updated_hitbox(self, map_size))
 
-        window_width, window_height = game_display.get_size()
+        window_width, window_height = GAME_DISPLAY.get_size()
         cam_x = max(0, min(self.pos.x - window_width // 2, map_size[0] - window_width))
         cam_y = max(0, min(self.pos.y - window_height // 2, map_size[1] - window_height))
 
         draw_pos = self.pos - Vector2(cam_x, cam_y)
 
         if self.facing_right:
-            game_display.blit(self.submarine_image, draw_pos)
+            GAME_DISPLAY.blit(self.submarine_image, draw_pos)
         else:
             flipped_img = transform.flip(self.submarine_image, True, False)
-            game_display.blit(flipped_img, draw_pos)
+            GAME_DISPLAY.blit(flipped_img, draw_pos)
 
     def process_key_input(self, map_size, block_list):
 
-        hitbox = Player.updated_hitbox(self)
+        hitbox = Player.updated_hitbox(self, map_size)
+        if hitbox != Rect(992,0,64,48):
+            pass
 
         pressed = key.get_pressed()
         direction = Vector2(0, 0)
@@ -73,7 +81,7 @@ class Player:
         if self.velocity.length() > self.max_speed:
             self.velocity = self.velocity.normalize() * self.max_speed
 
-        if hitbox.collidelist(block_list) == -1: #hitbox werkte niet
+        if hitbox.collidelist(block_list) == -1:
             self.pos += self.velocity
 
         self.pos.x = max(0, min(self.pos.x, map_size[0] - hitbox.width))

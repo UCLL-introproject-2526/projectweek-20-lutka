@@ -3,13 +3,13 @@ from constants import *
 from pygame import *
 
 class Map():
-    def __init__(self, player, game_display):
+    def __init__(self, player):
         bg_image = image.load("achtergrond gradient.png").convert()
         self.background_image = transform.scale(bg_image, (CELL_SIZE*COLS, CELL_SIZE*ROWS))
         self.map_size = self.background_image.get_size()
         self.player = player
 
-        self.window_size = game_display.get_size()
+        self.window_size = GAME_DISPLAY.get_size()
 
     def tracking_player(self):
         x = max(0, min(self.map_size[0] - self.window_size[0], self.player.pos.x - self.window_size[0] // 2))
@@ -17,11 +17,11 @@ class Map():
         return Vector2(x,y)
 
 # zorgt dat de camera de sub volgt
-    def draw(self, game_display, blocks_list):
+    def draw(self, blocks_list):
         position = Map.tracking_player(self)
-        game_display.blit(self.background_image, (-position.x, -position.y))
+        GAME_DISPLAY.blit(self.background_image, (-position.x, -position.y))
         
-        Map.draw_world(self, game_display, blocks_list)
+        Map.draw_world(self, blocks_list)
 
     def get_world_rects(self, matrix):
         position = Map.tracking_player(self)
@@ -40,10 +40,10 @@ class Map():
         return rect_list        
 
 
-    def draw_world(self, game_display, blocks_list):
+    def draw_world(self, blocks_list):
     
         for rock in blocks_list:    
-            draw.rect(game_display, GREY, rock)
+            draw.rect(GAME_DISPLAY, GREY, rock)
 
 
     def generate_world(self):

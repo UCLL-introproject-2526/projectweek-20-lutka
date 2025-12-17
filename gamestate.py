@@ -9,6 +9,6 @@ class State:
         # self.xtime = 0 
         
     #maakt een nieuwe frame door over de oude te tekenen
-    def render(self, surface):
+    def render(self):
         #flip kopieert de backbuffer naar de frontbuffer zie "Drawing a Circle"
         display.flip()

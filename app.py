@@ -11,7 +11,6 @@ def main():
     # mixer.music.load("christmas-jazz-christmas-holiday-347485.mp3")
     # mixer.music.play(-1)
 
-    game_display = display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
     GAME_FONT1 = font.SysFont("New Times Roman", 70, font.Font.bold)
     GAME_FONT2 = font.SysFont("Arial", 30)
     clock = time.Clock()
@@ -23,7 +22,7 @@ def main():
     # Create player with map size for boundary checking
     player_position = Vector2(START.x,START.y)
     p = Player(player_position)
-    m = Map(p, game_display)
+    m = Map(p)
     world_matrix = m.generate_world()
     
     while running:
@@ -53,24 +52,24 @@ def main():
             p.process_key_input(m.map_size, blocks)
 
         # Draw everything
-        m.draw(game_display, blocks)
+        m.draw(blocks)
         
         if t.time_left > 0:
-            p.draw(game_display, m.map_size)
-            state.render(game_display)
-            t.render(game_display)
+            p.draw( m.map_size)
+            state.render()
+            t.render(GAME_DISPLAY)
         else:
             # Draw game over screen
             text_surface1 = GAME_FONT1.render(
                 "Game Over",
                 True, (250, 0, 0)
             )
-            game_display.blit(text_surface1, (355, 300))
+            GAME_DISPLAY.blit(text_surface1, (355, 300))
             text_surface2 = GAME_FONT2.render(
                 "Geen zuurstof! Druk ENTER om opnieuw te beginnen.",
                 True, (250, 250, 250)
             )
-            game_display.blit(text_surface2, (225, 380))
+            GAME_DISPLAY.blit(text_surface2, (225, 380))
         
         display.flip()  
         clock.tick(60)  
