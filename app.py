@@ -45,12 +45,12 @@ def main():
             if t.time_left > 0:
                 t.handle_event(e)
 
+        #blocks
+        blocks = m.get_world_rects(world_matrix)
+
         # Process input only if game is not over
         if t.time_left > 0:
             p.process_key_input(m.map_size, blocks)
-        
-        #blocks
-        blocks = m.get_world_rects(world_matrix)
 
         # Draw everything
         m.draw(game_display, blocks)

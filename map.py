@@ -54,8 +54,10 @@ class Map():
         #een 0 is water, een 1 is rots, een 7 is pakje
         world_matrix = []
 
+        world_matrix.append([0]*COLS)
+
         #genereer de matrix met 1/nde kans op water (zodat er al simpele natuurlijke grot structuren kunnen ontstaan)
-        for i in range(ROWS):
+        for i in range(ROWS-1):
             row = []
             for j in range(COLS):
                 chance_rock = r.randint(0,WATER_CHANCE-1)
@@ -70,9 +72,6 @@ class Map():
         #we graven in de matrix een pad van midden boven tot beneden met kronkels
         digger_row = 0
         digger_col = (COLS+1)//2
-
-        #startpunt is water
-        world_matrix[digger_row][digger_col] = water
 
         #0 is links, 1 is beneden, 2 is rechts
         left = 0
