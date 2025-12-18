@@ -17,7 +17,7 @@ def main():
 
     state = State()
     running = True
-    t = Timer(25)
+    t = Timer(60)
     
     # Create player with map size for boundary checking
     player_position = Vector2(START.x,START.y)
@@ -26,6 +26,7 @@ def main():
     world_matrix = m.generate_world()
     
     while running:
+        dt = clock.tick(60) * .001 * TARGET_FPS
         # Events
         for e in event.get():
             if e.type == QUIT:
@@ -34,8 +35,7 @@ def main():
             if t.time_left == 0 and e.type == KEYDOWN and e.key == K_RETURN:
                 time.set_timer(t.TIMER_EVENT, 0)
                 state = State()
-                player_position = Vector2(START.x,START.y)
-                p = Player(player_position)
+                p = Player(START)
                 m = Map(p)
                 world_matrix = m.generate_world()
                 t = Timer(10)
@@ -49,7 +49,7 @@ def main():
 
         # Process input only if game is not over
         if t.time_left > 0:
-            p.process_key_input(blocks)
+            p.process_key_input(dt, blocks)
 
         # Draw everything
         m.draw(blocks)
@@ -72,7 +72,6 @@ def main():
             GAME_DISPLAY.blit(text_surface2, (225, 380))
         
         display.flip()  
-        clock.tick(60)  
 
 
 main()

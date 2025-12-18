@@ -11,11 +11,7 @@ SUBTRACT_FROM_HITBOX_HEIGHT = SPRITE_WIDTH*5//16
 class Player: 
     def __init__(self, vector):
         # position coords
-        
-        self.hitbox = Rect(vector.x, vector.y, SPRITE_WIDTH - SUBTRACT_FROM_HITBOX_WIDTH, SPRITE_HEIGHT - SUBTRACT_FROM_HITBOX_HEIGHT)
-
-        self.pos = math.Vector2(self.hitbox.x,self.hitbox.y)
-
+        self.pos = Vector2(vector.x,vector.y)
         sub_image = image.load("submarine.png")
         self.submarine_image = transform.scale(sub_image, (SPRITE_WIDTH, SPRITE_HEIGHT))
         self.sprite_size = self.submarine_image.get_size()
@@ -54,7 +50,7 @@ class Player:
         draw.rect(GAME_DISPLAY, RED, self.updated_hitbox()) #moet uiteindelijk weg
 
 
-    def process_key_input(self, dt, block_list):
+    def process_key_input(self, block_list):
 
         self.hitbox= self.updated_hitbox() 
 
@@ -128,17 +124,26 @@ class Player:
     def move_single_axis(self, dx, dy, block_list):
         
         # Move the rect
-        self.hitbox.x += dx
-        self.hitbox.y += dy
+        self.pos.x += dx
+        self.pos.y += dy
+        
+        sprite_rect = self.submarine_image.get_rect(topleft=(self.pos.x, self.pos.y))
 
-        # If you collide with a wall, move out based on velocity
+        # If you collide with a block, move out based on velocity
         for block in block_list:
             if self.hitbox.colliderect(block):
                 if dx > 0: # Moving right; Hit the left side of the wall
                     self.hitbox.right = block.left
+                    self.pos.x = self.hitbox.x - (ADD_TO_HITBOX_X + 1)
                 if dx < 0: # Moving left; Hit the right side of the wall
                     self.hitbox.left = block.right
+                    self.pos.x = self.hitbox.x - (ADD_TO_HITBOX_X + 1)
                 if dy > 0: # Moving down; Hit the top side of the wall
                     self.hitbox.bottom = block.top
+                    self.pos.y = self.hitbox.y - (ADD_TO_HITBOX_Y + 1)
                 if dy < 0: # Moving up; Hit the bottom side of the wall
-                    self.hitbox.top = block.bottom        
+                    self.hitbox.top = block.bottom
+                    self.pos.y = self.hitbox.y - (ADD_TO_HITBOX_Y + 1)
+                self.velocity = Vector2(0,0)
+
+        

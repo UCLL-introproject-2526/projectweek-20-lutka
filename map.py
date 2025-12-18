@@ -9,8 +9,8 @@ class Map():
         self.player = player
 
     def tracking_player(self):
-        x = max(0, min(MAP_SIZE[0] - DISPLAY_WIDTH, self.player.pos.x - DISPLAY_WIDTH // 2))
-        y = max(0, min(MAP_SIZE[1] - DISPLAY_HEIGHT, self.player.pos.y - DISPLAY_HEIGHT // 2))
+        x = max(0, min(MAP_SIZE[0] - DISPLAY_WIDTH, self.player.hitbox.x - DISPLAY_WIDTH // 2))
+        y = max(0, min(MAP_SIZE[1] - DISPLAY_HEIGHT, self.player.hitbox.y - DISPLAY_HEIGHT // 2))
         return Vector2(x,y)
 
 # zorgt dat de camera de sub volgt
