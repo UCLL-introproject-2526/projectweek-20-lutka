@@ -18,6 +18,7 @@ START = Vector2(((COLS+1)//2)*CELL_SIZE + (CELL_SIZE+1)//2, (CELL_SIZE+1)//4)
 RED = (225, 0, 0)
 BLACK = (0, 0, 0)
 GREY = (100,100,100)
+surface_color = (135, 206, 250)
 
 CIRCLE_RADIUS = 20
 SPEED = 5

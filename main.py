@@ -31,24 +31,28 @@ def main():
     player_position = Vector2(START.x, START.y)
     p = Player(player_position)
     
-    # Map generate before chaecking collisions
+    # Map generate before checking collisions
     m = Map(p)
     world_matrix = m.generate_world()
     world_blocks = m.get_world_rects(world_matrix)
+    
+    # Spawn initial gifts (BELANGRIJK!)
+    spawn_multiple_gifts(world_matrix, amount=5)
     
     # check collisions with the blocks that exist
     while any(p.get_world_hitbox().colliderect(b) for b in world_blocks):
         p.pos.y -= 1
 
     while running:
+        dt = clock.tick(60) / 1000
         for e in event.get():
             if e.type == QUIT:
                 running = False
 
-            if t.time_left == 0 and e.type == KEYDOWN and e.key == K_RETURN:
+            if t.time_left <= 0 and e.type == KEYDOWN and e.key == K_RETURN:
                 game_over = False
-                time.set_timer(t.TIMER_EVENT, 0)
                 state = State()
+                reset_package_counter()  # RESET COUNTER!
 
                 player_position = Vector2(START.x, START.y)
                 p = Player(player_position)
@@ -56,6 +60,9 @@ def main():
                 m = Map(p)
                 world_matrix = m.generate_world()
                 world_blocks = m.get_world_rects(world_matrix)
+                
+                # Spawn gifts again
+                spawn_multiple_gifts(world_matrix, amount=5)
                 
                 # Check collisions after regenerating blocks
                 while any(p.get_world_hitbox().colliderect(b) for b in world_blocks):
@@ -65,7 +72,6 @@ def main():
 
                 # Herstart timers
                 time.set_timer(SPAWN_PACKAGE_EVENT, 5000)
-                time.set_timer(t.TIMER_EVENT, 1000)
                 
                 # Herstart background muziek
                 mixer.music.stop()
@@ -76,17 +82,25 @@ def main():
             # Only handle timer events if game is running
             if e.type == SPAWN_PACKAGE_EVENT:
                 if t.time_left > 0:
-                    t.handle_event(e)
-                    spawn_multiple_gifts(world_matrix)
+                    # Spawn 1 nieuw pakje elke 5 seconden
+                    spawn_gift_in_matrix(world_matrix)
 
         # update
         if t.time_left > 0:
             p.process_key_input(world_blocks)
+            if p.pos.y <= 64 and t.time_left < t.max_time:
+                t.refill()
+            t.update(dt)
+            
+            # CHECK COLLISION MET GIFTS! (DEZE REGEL ONTBRAK!)
+            update_game_with_gifts(world_matrix, p, t, state)
 
         # draw
-        m.draw(world_blocks)
+        m.draw(world_blocks, world_matrix)
         
-        draw_all_gifts(game_display, world_matrix, p.pos)
+        # GEBRUIK CAMERA POSITIE!
+        camera_pos = m.tracking_player()
+        draw_all_gifts(world_matrix, camera_pos)
 
         if t.time_left > 0:
             p.draw()
@@ -103,7 +117,7 @@ def main():
                 True, (0, 0, 0)
             )
             GAME_DISPLAY.blit(text_surface2, (225, 380))
-            gift_count = count_gifts_on_map(world_matrix)
+            
             text_surface3 = GAME_FONT2.render(
                 f"Aantal pakjes verzameld: {state.score}",
                 True, (0, 0, 0)
@@ -118,9 +132,6 @@ def main():
                 mixer.music.play(0)
                 game_over = True
         
-        display.flip()  
-        clock.tick(60)  
-
-    # quit()
+        display.flip()    
 
 main()

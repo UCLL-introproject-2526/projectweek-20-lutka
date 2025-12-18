@@ -13,9 +13,12 @@ class Map():
         y = max(0, min(MAP_SIZE[1] - DISPLAY_HEIGHT, self.player.pos.y - DISPLAY_HEIGHT // 2))
         return Vector2(x, y)
 
-    def draw(self, blocks_list):
+    def draw(self, blocks_list, world_matrix):
         position = self.tracking_player()
         GAME_DISPLAY.blit(self.background_image, (-position.x, -position.y))
+
+        surface_rect = Rect(-position.x, -position.y, len(world_matrix[0]) * CELL_SIZE, CELL_SIZE)
+        draw.rect(GAME_DISPLAY, surface_color, surface_rect)
         # camera positie doorgeven
         self.draw_world(blocks_list, position)
 
