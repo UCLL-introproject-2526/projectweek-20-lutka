@@ -10,7 +10,7 @@ RED = (225, 0, 0)
 BLACK = (0, 0, 0)
 GREY = (100,100,100)
 
-CELL_SIZE = 64
+CELL_SIZE = 75
 
 ROWS = 100
 COLS = 30

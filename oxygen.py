@@ -21,6 +21,10 @@ class Timer:
                 self.time_left -= 1
             else:
                 time.set_timer(self.TIMER_EVENT, 0)
+    
+    def add_oxygen(self, amount):
+        """Voeg oxygen toe, maar niet meer dan het maximum"""
+        self.time_left = min(self.time_left + amount, self.max_time)
 
     def render(self, surface):
         draw.rect(surface, (87, 89, 91),

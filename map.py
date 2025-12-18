@@ -4,10 +4,13 @@ from pygame import *
 
 class Map():
     def __init__(self, player, game_display):
-        bg_image = image.load("achtergrond gradient.png").convert()
+        bg_image = image.load("assets/Images/achtergrond gradient.png").convert()
         self.background_image = transform.scale(bg_image, (CELL_SIZE*COLS, CELL_SIZE*ROWS))
         self.map_size = self.background_image.get_size()
         self.player = player
+        self.water = 0
+        self.rock = 1
+        self.gift = 7
 
         self.window_size = game_display.get_size()
 
@@ -47,10 +50,6 @@ class Map():
 
 
     def generate_world(self):
-        water = 0
-        rock = 1
-        gift = 7
-
         #een 0 is water, een 1 is rots, een 7 is pakje
         world_matrix = []
 
@@ -62,9 +61,9 @@ class Map():
 
                 #als niet nul dan is er een rotsblok, bij nul is er water
                 if chance_rock != 0:
-                    row.append(rock)
+                    row.append(self.rock)
                 else:
-                    row.append(water)
+                    row.append(self.water)
             world_matrix.append(row)
 
         #we graven in de matrix een pad van midden boven tot beneden met kronkels
@@ -72,7 +71,7 @@ class Map():
         digger_col = (COLS+1)//2
 
         #startpunt is water
-        world_matrix[digger_row][digger_col] = water
+        world_matrix[digger_row][digger_col] = self.water
 
         #0 is links, 1 is beneden, 2 is rechts
         left = 0
@@ -92,14 +91,14 @@ class Map():
             #graaf in de juiste richting
             if random_direction == left and 0 < digger_col:
                 digger_col -=1
-                world_matrix[digger_row][digger_col] = water
+                world_matrix[digger_row][digger_col] = self.water
             
             elif random_direction == down:
                 digger_row +=1
-                world_matrix[digger_row][digger_col] = water
+                world_matrix[digger_row][digger_col] = self.water
 
             elif random_direction == right and digger_col < (COLS-1):
                 digger_col +=1
-                world_matrix[digger_row][digger_col] = water
+                world_matrix[digger_row][digger_col] = self.water
         
         return world_matrix

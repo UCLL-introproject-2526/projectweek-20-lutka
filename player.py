@@ -6,7 +6,7 @@ class Player:
         # position coords
         self.pos = Vector2(vector.x,vector.y)
 
-        sub_image = image.load("submarine.png")
+        sub_image = image.load("assets/Images/submarine.png")
         self.submarine_image = transform.scale(sub_image, (80, 40))
         self.sprite_size = self.submarine_image.get_size()
 
