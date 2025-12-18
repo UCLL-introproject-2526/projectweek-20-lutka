@@ -45,6 +45,7 @@ def main():
 
     while running:
         dt = clock.tick(60) / 1000
+        
         for e in event.get():
             if e.type == QUIT:
                 running = False
@@ -95,7 +96,9 @@ def main():
             # CHECK COLLISION MET GIFTS! (DEZE REGEL ONTBRAK!)
             update_game_with_gifts(world_matrix, p, t, state)
 
-        # draw
+        # draw - WIS HET SCHERM EERST!
+        game_display.fill((0, 0, 0))  # DEZE REGEL TOEGEVOEGD - wis scherm met zwart
+        
         m.draw(world_blocks, world_matrix)
         
         # GEBRUIK CAMERA POSITIE!
