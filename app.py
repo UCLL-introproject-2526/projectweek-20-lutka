@@ -29,12 +29,13 @@ def main():
 
     while running:
         # Events
+        dt = clock.tick(60) / 1000
         for e in event.get():
             if e.type == QUIT:
                 running = False
 
             if t.time_left == 0 and e.type == KEYDOWN and e.key == K_RETURN:
-                time.set_timer(t.TIMER_EVENT, 0)
+                # time.set_timer(t.TIMER_EVENT, 0)
                 state = State()
                 player_position = Vector2(START.x, START.y)
                 p = Player(player_position)
@@ -43,14 +44,15 @@ def main():
                 t = Timer(10)
 
             # Only handle timer events if game is running
-            if t.time_left > 0:
-                t.handle_event(e)
+            # if t.time_left > 0:
+            # t.update(dt)
 
         # Process input only if game is not over
         if t.time_left > 0:
             p.process_key_input(m.map_size)
             if p.pos.y <= 64 and t.time_left < t.max_time:
                 t.refill()
+            t.update(dt)
 
         # Draw everything
         m.draw(game_display, world_matrix)
@@ -71,7 +73,6 @@ def main():
             game_display.blit(text_surface2, (225, 380))
 
         display.flip()
-        clock.tick(60)
 
 
 main()
