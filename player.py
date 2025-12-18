@@ -79,13 +79,28 @@ class Player:
             self.velocity = self.velocity.normalize() * self.max_speed
 
 
-        colliding_blocks = self.hitbox.collidelistall(block_list)
-        if colliding_blocks == []:
-            self.pos += self.velocity
+        # colliding_blocks = self.hitbox.collidelistall(block_list)
+        # if colliding_blocks != []:
+        #     for i in colliding_blocks:
+        #         if dx > 0: # Moving right; Hit the left side of the block
+        #             self.pos.right = block_list[i].left
+        #         if dx < 0: # Moving left; Hit the right side of the block
+        #             self.pos.left = block_list[i].right
+        #         if dy > 0: # Moving down; Hit the top side of the block
+        #             self.pos.bottom = block_list[i].top
+        #         if dy < 0: # Moving up; Hit the bottom side of the block
+        #             self.pos.top = block_list[i].bottom
+
+        #         if 
+        # else:
+        #     self.pos += self.velocity
+
 
         # we checken de indices om te zien met welke rect er gebots wordt en dan zetten we de position(dus niet die van de hitbox juist)
+        # we gaan moeten kijken langs welke kant er geraakt is
+        # we gaan kijken welk hoekpunt van de hitbox collide en dan de kortste weg naar buiten berekenen
 
-        # self.move(self.velocity.x, self.velocity.y, block_list)
+        self.move(self.velocity.x, self.velocity.y, block_list)
 
 
         #voor de map borders denk ik
@@ -111,15 +126,24 @@ class Player:
         # Move the rect
         self.pos.x += dx
         self.pos.y += dy
+        
+        sprite_rect = self.submarine_image.get_rect(topleft=(self.pos.x, self.pos.y))
 
         # If you collide with a block, move out based on velocity
         for block in block_list:
             if self.hitbox.colliderect(block):
-                if dx > 0: # Moving right; Hit the left side of the block
+                if dx > 0: # Moving right; Hit the left side of the wall
                     self.hitbox.right = block.left
-                if dx < 0: # Moving left; Hit the right side of the block
+                    self.pos.x = self.hitbox.x - (ADD_TO_HITBOX_X + 1)
+                if dx < 0: # Moving left; Hit the right side of the wall
                     self.hitbox.left = block.right
-                if dy > 0: # Moving down; Hit the top side of the block
+                    self.pos.x = self.hitbox.x - (ADD_TO_HITBOX_X + 1)
+                if dy > 0: # Moving down; Hit the top side of the wall
                     self.hitbox.bottom = block.top
-                if dy < 0: # Moving up; Hit the bottom side of the block
+                    self.pos.y = self.hitbox.y - (ADD_TO_HITBOX_Y + 1)
+                if dy < 0: # Moving up; Hit the bottom side of the wall
                     self.hitbox.top = block.bottom
+                    self.pos.y = self.hitbox.y - (ADD_TO_HITBOX_Y + 1)
+                self.velocity = Vector2(0,0)
+
+        
