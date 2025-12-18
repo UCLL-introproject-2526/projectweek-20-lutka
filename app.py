@@ -5,6 +5,7 @@ from map import Map
 from player import Player
 from oxygen import Timer
 
+
 def main():
     init()
 
@@ -19,13 +20,13 @@ def main():
     state = State()
     running = True
     t = Timer(25)
-    
+
     # Create player with map size for boundary checking
-    player_position = Vector2(START.x,START.y)
+    player_position = Vector2(START.x, START.y)
     p = Player(player_position)
     m = Map(p)
     world_matrix = m.generate_world()
-    
+
     while running:
         # Events
         for e in event.get():
@@ -35,7 +36,7 @@ def main():
             if t.time_left == 0 and e.type == KEYDOWN and e.key == K_RETURN:
                 time.set_timer(t.TIMER_EVENT, 0)
                 state = State()
-                player_position = Vector2(START.x,START.y)
+                player_position = Vector2(START.x, START.y)
                 p = Player(player_position)
                 m = Map(p)
                 world_matrix = m.generate_world()
@@ -48,29 +49,29 @@ def main():
         # Process input only if game is not over
         if t.time_left > 0:
             p.process_key_input(m.map_size)
-        
+            if p.pos.y <= 64 and t.time_left < t.max_time:
+                t.refill()
+
         # Draw everything
         m.draw(game_display, world_matrix)
-        
+
         if t.time_left > 0:
             p.draw(game_display, m.map_size)
             state.render(game_display)
             t.render(game_display)
         else:
             # Draw game over screen
-            text_surface1 = GAME_FONT1.render(
-                "Game Over",
-                True, (250, 0, 0)
-            )
+            text_surface1 = GAME_FONT1.render("Game Over", True, (250, 0, 0))
             game_display.blit(text_surface1, (355, 300))
             text_surface2 = GAME_FONT2.render(
                 "Geen zuurstof! Druk ENTER om opnieuw te beginnen.",
-                True, (250, 250, 250)
+                True,
+                (250, 250, 250),
             )
             game_display.blit(text_surface2, (225, 380))
-        
-        display.flip()  
-        clock.tick(60)  
+
+        display.flip()
+        clock.tick(60)
 
 
 main()

@@ -2,6 +2,7 @@ import pygame
 import pygame.freetype
 from pygame import *
 
+
 # klasse die de timer bijhoudt
 class Timer:
     def __init__(self, max_time):
@@ -22,15 +23,20 @@ class Timer:
             else:
                 time.set_timer(self.TIMER_EVENT, 0)
 
-    def render(self, surface):
-        draw.rect(surface, (87, 89, 91),
-                  (self.bar_x, self.bar_y,
-                   self.bar_width, self.bar_height))
+    def refill(self):
+        self.time_left = self.max_time
 
-        current_width = int(
-            (self.time_left / self.max_time) * self.bar_width
+    def render(self, surface):
+        draw.rect(
+            surface,
+            (87, 89, 91),
+            (self.bar_x, self.bar_y, self.bar_width, self.bar_height),
         )
 
-        draw.rect(surface, (21, 129, 191),
-                  (self.bar_x, self.bar_y,
-                   current_width, self.bar_height))
+        current_width = int((self.time_left / self.max_time) * self.bar_width)
+
+        draw.rect(
+            surface,
+            (21, 129, 191),
+            (self.bar_x, self.bar_y, current_width, self.bar_height),
+        )
