@@ -13,7 +13,7 @@ ADD_TO_HITBOX_Y = (SPRITE_HEIGHT - HITBOX_HEIGHT) // 2
 class Player: 
     def __init__(self, vector):
         self.pos = Vector2(vector.x, vector.y)
-        sub_image = image.load("submarine.png")
+        sub_image = image.load("assets/Images/submarine.png")
         self.submarine_image = transform.scale(sub_image, (SPRITE_WIDTH, SPRITE_HEIGHT))
         self.sprite_size = self.submarine_image.get_size()
         self.speed = 3 

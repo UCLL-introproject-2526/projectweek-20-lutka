@@ -7,6 +7,7 @@ class State:
         self.xcoordinate = 0
         self.ycoordinate = 0 # later mss beide vervangen door vector
         # self.xtime = 0 
+        self.score = 0  # VOEG DEZE REGEL TOE
         
     #maakt een nieuwe frame door over de oude te tekenen
     def render(self):

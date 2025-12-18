@@ -4,7 +4,7 @@ from pygame import *
 
 class Map():
     def __init__(self, player):
-        bg_image = image.load("achtergrond gradient.png").convert()
+        bg_image = image.load("assets/Images/achtergrond gradient.png").convert()
         self.background_image = transform.scale(bg_image, MAP_SIZE)
         self.player = player
 
