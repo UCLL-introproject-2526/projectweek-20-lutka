@@ -1,47 +1,43 @@
 from constants import *
 from pygame import *
 
+SPRITE_WIDTH = 64
+SPRITE_HEIGHT = SPRITE_WIDTH*3//4
+ADD_TO_HITBOX_X = SPRITE_WIDTH//8
+ADD_TO_HITBOX_Y = SPRITE_WIDTH//4
+SUBTRACT_FROM_HITBOX_WIDTH = SPRITE_WIDTH//4
+SUBTRACT_FROM_HITBOX_HEIGHT = SPRITE_WIDTH*5//16
 
 class Player: 
     def __init__(self, vector):
         # position coords
         self.pos = Vector2(vector.x,vector.y)
-
         sub_image = image.load("submarine.png")
-        self.submarine_image = transform.scale(sub_image, (64, 48))
+        self.submarine_image = transform.scale(sub_image, (SPRITE_WIDTH, SPRITE_HEIGHT))
         self.sprite_size = self.submarine_image.get_size()
-
-        # self.rect = self.submarine_image.get_rect(topleft=(int(self.pos.x), int(self.pos.y)))
-        # self.hitbox = Rect(
-        #     self.rect.x + 16,
-        #     self.rect.y + 12,
-        #     self.rect.width - 32,
-        #     self.rect.height - 24,
-        # )
-        # self.rect.topleft = (10, 10)
+        self.hitbox = self.updated_hitbox()
         self.velocity = Vector2(0, 0)
         self.acceleration = 0.1
         self.max_speed = 4
         self.friction = 0.05
         self.facing_right = True
 
-    def updated_hitbox(self, map_size):
 
-        window_width, window_height = GAME_DISPLAY.get_size()
-        cam_x = max(0, min(self.pos.x - window_width // 2, map_size[0] - window_width))
-        cam_y = max(0, min(self.pos.y - window_height // 2, map_size[1] - window_height))
+    def updated_hitbox(self):
+
+        cam_x = max(0, min(self.pos.x - DISPLAY_WIDTH // 2, MAP_SIZE[0] - DISPLAY_WIDTH))
+        cam_y = max(0, min(self.pos.y - DISPLAY_HEIGHT // 2, MAP_SIZE[1] - DISPLAY_HEIGHT))
         draw_pos = self.pos - Vector2(cam_x, cam_y)
 
-        return self.submarine_image.get_rect(topleft=(draw_pos.x, draw_pos.y))
+        big_hitbox = self.submarine_image.get_rect(topleft=(draw_pos.x, draw_pos.y))
+
+        return Rect(big_hitbox.x + ADD_TO_HITBOX_X, big_hitbox.y + ADD_TO_HITBOX_Y, big_hitbox.width - SUBTRACT_FROM_HITBOX_WIDTH, big_hitbox.height - SUBTRACT_FROM_HITBOX_HEIGHT)
 
 
-    def draw(self, map_size):
+    def draw(self):
 
-        draw.rect(GAME_DISPLAY, RED, Player.updated_hitbox(self, map_size))
-
-        window_width, window_height = GAME_DISPLAY.get_size()
-        cam_x = max(0, min(self.pos.x - window_width // 2, map_size[0] - window_width))
-        cam_y = max(0, min(self.pos.y - window_height // 2, map_size[1] - window_height))
+        cam_x = max(0, min(self.pos.x - DISPLAY_WIDTH // 2, MAP_SIZE[0] - DISPLAY_WIDTH))
+        cam_y = max(0, min(self.pos.y - DISPLAY_HEIGHT // 2, MAP_SIZE[1] - DISPLAY_HEIGHT))
 
         draw_pos = self.pos - Vector2(cam_x, cam_y)
 
@@ -51,11 +47,12 @@ class Player:
             flipped_img = transform.flip(self.submarine_image, True, False)
             GAME_DISPLAY.blit(flipped_img, draw_pos)
 
-    def process_key_input(self, map_size, block_list):
+        draw.rect(GAME_DISPLAY, RED, self.updated_hitbox()) #moet uiteindelijk weg
 
-        hitbox = Player.updated_hitbox(self, map_size)
-        if hitbox != Rect(992,0,64,48):
-            pass
+
+    def process_key_input(self, block_list):
+
+        self.hitbox= self.updated_hitbox() 
 
         pressed = key.get_pressed()
         direction = Vector2(0, 0)
@@ -81,17 +78,48 @@ class Player:
         if self.velocity.length() > self.max_speed:
             self.velocity = self.velocity.normalize() * self.max_speed
 
-        if hitbox.collidelist(block_list) == -1:
+
+        colliding_blocks = self.hitbox.collidelistall(block_list)
+        if colliding_blocks == []:
             self.pos += self.velocity
 
-        self.pos.x = max(0, min(self.pos.x, map_size[0] - hitbox.width))
-        self.pos.y = max(0, min(self.pos.y, map_size[1] - hitbox.height))
+        # we checken de indices om te zien met welke rect er gebots wordt en dan zetten we de position(dus niet die van de hitbox juist)
 
-        if self.pos.x == 0 or self.pos.x == map_size[0] - hitbox.width:
+        # self.move(self.velocity.x, self.velocity.y, block_list)
+
+
+        #voor de map borders denk ik
+        self.pos.x = max(0, min(self.pos.x, MAP_SIZE[0] - self.hitbox.width))
+        self.pos.y = max(0, min(self.pos.y, MAP_SIZE[1] - self.hitbox.height))
+
+        if self.pos.x == 0 or self.pos.x == MAP_SIZE[0] - self.hitbox.width:
             self.velocity.x = 0
-        if self.pos.y == 0 or self.pos.y == map_size[1] - hitbox.height:
+        if self.pos.y == 0 or self.pos.y == MAP_SIZE[1] - self.hitbox.height:
             self.velocity.y = 0
 
-        # self.rect.topleft = (int(self.pos.x), int(self.pos.y))
 
-        # self.hitbox.topleft = (self.rect.x + 16, self.rect.y + 12)
+    def move(self, dx, dy, block_list):
+        
+        # Move each axis separately. Note that this checks for collisions both times.
+        if dx != 0:
+            self.move_single_axis(dx, 0, block_list)
+        if dy != 0:
+            self.move_single_axis(0, dy, block_list)
+
+    def move_single_axis(self, dx, dy, block_list):
+        
+        # Move the rect
+        self.pos.x += dx
+        self.pos.y += dy
+
+        # If you collide with a block, move out based on velocity
+        for block in block_list:
+            if self.hitbox.colliderect(block):
+                if dx > 0: # Moving right; Hit the left side of the block
+                    self.hitbox.right = block.left
+                if dx < 0: # Moving left; Hit the right side of the block
+                    self.hitbox.left = block.right
+                if dy > 0: # Moving down; Hit the top side of the block
+                    self.hitbox.bottom = block.top
+                if dy < 0: # Moving up; Hit the bottom side of the block
+                    self.hitbox.top = block.bottom

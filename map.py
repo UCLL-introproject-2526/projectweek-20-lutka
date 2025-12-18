@@ -5,15 +5,12 @@ from pygame import *
 class Map():
     def __init__(self, player):
         bg_image = image.load("achtergrond gradient.png").convert()
-        self.background_image = transform.scale(bg_image, (CELL_SIZE*COLS, CELL_SIZE*ROWS))
-        self.map_size = self.background_image.get_size()
+        self.background_image = transform.scale(bg_image, MAP_SIZE)
         self.player = player
 
-        self.window_size = GAME_DISPLAY.get_size()
-
     def tracking_player(self):
-        x = max(0, min(self.map_size[0] - self.window_size[0], self.player.pos.x - self.window_size[0] // 2))
-        y = max(0, min(self.map_size[1] - self.window_size[1], self.player.pos.y - self.window_size[1] // 2))
+        x = max(0, min(MAP_SIZE[0] - DISPLAY_WIDTH, self.player.pos.x - DISPLAY_WIDTH // 2))
+        y = max(0, min(MAP_SIZE[1] - DISPLAY_HEIGHT, self.player.pos.y - DISPLAY_HEIGHT // 2))
         return Vector2(x,y)
 
 # zorgt dat de camera de sub volgt
@@ -22,6 +19,7 @@ class Map():
         GAME_DISPLAY.blit(self.background_image, (-position.x, -position.y))
         
         Map.draw_world(self, blocks_list)
+
 
     def get_world_rects(self, matrix):
         position = Map.tracking_player(self)

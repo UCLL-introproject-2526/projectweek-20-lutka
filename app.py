@@ -49,13 +49,13 @@ def main():
 
         # Process input only if game is not over
         if t.time_left > 0:
-            p.process_key_input(m.map_size, blocks)
+            p.process_key_input(blocks)
 
         # Draw everything
         m.draw(blocks)
         
         if t.time_left > 0:
-            p.draw( m.map_size)
+            p.draw()
             state.render()
             t.render(GAME_DISPLAY)
         else:
