@@ -8,7 +8,8 @@ SPEED = 5
 
 RED = (225, 0, 0)
 BLACK = (0, 0, 0)
-GREY = (100,100,100)
+GREY = (100, 100, 100)
+surface_color = (135, 206, 250)
 
 CELL_SIZE = 64
 
@@ -16,4 +17,6 @@ ROWS = 100
 COLS = 30
 WATER_CHANCE = 3
 
-START = Vector2(((COLS+1)//2)*CELL_SIZE + (CELL_SIZE+1)//2,(CELL_SIZE+1)//2)
+START = Vector2(
+    ((COLS + 1) // 2) * CELL_SIZE + (CELL_SIZE + 1) // 2, (CELL_SIZE + 1) // 2
+)
