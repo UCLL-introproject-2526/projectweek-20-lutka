@@ -121,6 +121,10 @@ def update_game_with_gifts(world_matrix, player, timer, state):
             
             # 4. Update state score
             state.score += 1
+
+            pickup_sound = mixer.Sound("assets/Sounds/pickup.mp3")
+            pickup_sound.set_volume(0.5)
+            pickup_sound.play()
             
             return True
     

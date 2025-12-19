@@ -15,7 +15,7 @@ def main():
     mixer.music.play(-1)
 
     SPAWN_PACKAGE_EVENT = USEREVENT + 1
-    time.set_timer(SPAWN_PACKAGE_EVENT, 5000)
+    time.set_timer(SPAWN_PACKAGE_EVENT, 2000)
 
     elf_image = image.load("assets/Images/elf.png")
     elf_image = transform.scale(elf_image, (64, 64))
