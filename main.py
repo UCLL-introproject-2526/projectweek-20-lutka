@@ -5,6 +5,7 @@ from map import Map
 from player import Player
 from oxygen import Timer
 from gifts import *
+from arrow import *
 
 def main():
     init()
@@ -40,6 +41,7 @@ def main():
     m = Map(p)
     world_matrix = m.generate_world()
     world_blocks = m.get_world_rects(world_matrix)
+    arrow = ArrowIndicator()
     
     # Spawn initial gifts
     spawn_multiple_gifts(world_matrix, amount=5)
@@ -95,6 +97,9 @@ def main():
                 t.refill()
             t.update(dt)
             
+            # Update arrow timer
+            arrow.update(dt)
+            
             # collision check met pakjes
             update_game_with_gifts(world_matrix, p, t, state)
 
@@ -109,11 +114,21 @@ def main():
 
         elf_picked_up, has_won = p.elf_system(elf_picked_up, elf_image, m)
 
+        # Activeer pijl EENMALIG zodra elf wordt opgepakt
+        if elf_picked_up and not has_won and not arrow.active:
+            arrow.activate()
+
         if has_won:
             text_surface1 = GAME_FONT1.render("You saved the elf!", True, (0, 250, 0))
             GAME_DISPLAY.blit(text_surface1, (300, 300))
+            arrow.deactivate()
         elif t.time_left > 0:
             p.draw()
+            
+            # Teken pijl als elf is opgepakt maar nog niet gewonnen
+            if elf_picked_up:
+                arrow.draw(GAME_DISPLAY, p.draw_pos.x, p.draw_pos.y)
+            
             t.render(GAME_DISPLAY)
             pakjes_teller = GAME_FONT2.render(
                 f"Pakjes: {state.score}",
@@ -127,7 +142,7 @@ def main():
             GAME_DISPLAY.blit(text_surface2, (355, 300))
 
             text_surface3 = GAME_FONT2.render(
-                "Geen zuurstof! Druk ENTER om opnieuw te beginnen.",
+                "No oxygen left! Press enter to start again.",
                 True, (0, 0, 0)
             )
             GAME_DISPLAY.blit(text_surface3, (225, 380))
@@ -137,6 +152,8 @@ def main():
                 True, (0, 0, 0)
             )
             game_display.blit(text_surface4, (380, 430))
+
+            arrow.deactivate()
             
             # Start gameover muziek
             if not game_over:

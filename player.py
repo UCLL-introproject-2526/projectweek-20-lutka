@@ -29,10 +29,10 @@ class Player:
         cam_x = max(0, min(self.pos.x - DISPLAY_WIDTH // 2, MAP_SIZE[0] - DISPLAY_WIDTH))
         cam_y = max(0, min(self.pos.y - DISPLAY_HEIGHT // 2, MAP_SIZE[1] - DISPLAY_HEIGHT))
 
-        draw_pos = self.pos - Vector2(cam_x, cam_y)
+        self.draw_pos = self.pos - Vector2(cam_x, cam_y)
 
         img = self.submarine_image if self.facing_right else transform.flip(self.submarine_image, True, False)
-        GAME_DISPLAY.blit(img, draw_pos)
+        GAME_DISPLAY.blit(img, self.draw_pos)
 
     def process_key_input(self, block_list):
         pressed = key.get_pressed()
