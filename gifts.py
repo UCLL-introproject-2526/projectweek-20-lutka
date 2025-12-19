@@ -21,20 +21,17 @@ package_image2 = transform.scale(
 # Globale teller voor opgepakte pakjes
 packages_collected = 0
 
-
+# reset de pakjes counter naar 0
 def reset_package_counter():
-    """Reset de pakjes teller naar 0"""
     global packages_collected
     packages_collected = 0
 
-
+# aantel opgepakte pakjes terug krijgen
 def get_package_count():
-    """Krijg het huidige aantal opgepakte pakjes"""
     return packages_collected
 
-
+# spawn pakje op een willekeurige positie in het water
 def spawn_gift_in_matrix(world_matrix):
-    """Spawn één gift op een willekeurige water positie"""
     water_positions = []
     
     for row in range(ROWS):
@@ -48,24 +45,16 @@ def spawn_gift_in_matrix(world_matrix):
         return True
     return False
 
-
-def spawn_multiple_gifts(world_matrix, amount=5):
-    """Spawn meerdere gifts op de map"""
+# spawn meerdere gifts
+def spawn_multiple_gifts(world_matrix, amount=10):
     spawned = 0
     for _ in range(amount):
         if spawn_gift_in_matrix(world_matrix):
             spawned += 1
-    print(f"{spawned} pakjes gespawned op de map")
     return spawned
 
-
+# collision voor alle pakjes maken (met WORLD COORDINATES)
 def get_gift_rects(world_matrix):
-    """
-    Maak collision rects voor alle gifts in WORLD COORDINATES
-    (net zoals get_world_rects voor rocks)
-    
-    Returns: list van (rect, gift_type, row, col) tuples
-    """
     gift_rects = []
     current_cell_origin = Vector2(0, 0)
     
@@ -89,16 +78,10 @@ def get_gift_rects(world_matrix):
     
     return gift_rects
 
-
+# Gift teken op het scherm met camera offset
+# world_materix = wereld grid
+# capera_pos = Vector2 met camera positie 
 def draw_all_gifts(world_matrix, camera_pos):
-    """
-    Teken alle gifts op het scherm met camera offset
-    (net zoals draw_world voor rocks)
-    
-    Args:
-        world_matrix: De wereld grid
-        camera_pos: Vector2 met camera positie (van tracking_player)
-    """
     gift_rects = get_gift_rects(world_matrix)
     
     for gift_rect, gift_type, row, col in gift_rects:
@@ -115,21 +98,8 @@ def draw_all_gifts(world_matrix, camera_pos):
             else:
                 GAME_DISPLAY.blit(package_image2, (screen_x, screen_y))
 
-
+# check gift collision + update game state
 def update_game_with_gifts(world_matrix, player, timer, state):
-    """
-    Check gift collision en update game state
-    Roep deze functie aan in je main game loop!
-    
-    Args:
-        world_matrix: De wereld grid
-        player: Player object met .rect of .get_world_hitbox()
-        timer: Timer object
-        state: State object met .score
-    
-    Returns:
-        True als een pakje is opgepakt
-    """
     global packages_collected
     
     # Get player hitbox in world coordinates
@@ -152,25 +122,12 @@ def update_game_with_gifts(world_matrix, player, timer, state):
             # 4. Update state score
             state.score += 1
             
-            print(f"✓ Pakje opgepakt! Score: {state.score} | Oxygen +5")
             return True
     
     return False
 
-
+# check of pakje is opgepakt
 def check_player_gift_collision(world_matrix, player_rect, timer=None, oxygen_amount=5):
-    """
-    Check of speler een gift oppakt (collision in WORLD COORDINATES)
-    
-    Args:
-        world_matrix: De wereld grid
-        player_rect: pygame.Rect van de speler (in world coordinates!)
-        timer: Timer object met add_oxygen() methode
-        oxygen_amount: Hoeveel oxygen toe te voegen
-        
-    Returns:
-        True als een gift is opgepakt, anders False
-    """
     global packages_collected
     
     # Get alle gift rects in world coordinates
@@ -189,14 +146,12 @@ def check_player_gift_collision(world_matrix, player_rect, timer=None, oxygen_am
             # 3. Verhoog de teller
             packages_collected += 1
             
-            print(f"✓ Pakje opgepakt! Totaal: {packages_collected} | Oxygen +{oxygen_amount}")
             return True
     
     return False
 
-
+# aantal pakjes tellen op de map
 def count_gifts_on_map(world_matrix):
-    """Tel hoeveel gifts er nog op de map zijn"""
     count = 0
     for row in world_matrix:
         for cell in row:
@@ -204,15 +159,8 @@ def count_gifts_on_map(world_matrix):
                 count += 1
     return count
 
-
+# teken de pakjes op het scherm
 def draw_package_counter(font, x=10, y=10):
-    """
-    Teken de pakjes counter op het scherm
-    
-    Args:
-        font: pygame font object
-        x, y: Positie op scherm
-    """
     counter_text = f"Pakjes: {packages_collected}"
     text_surface = font.render(counter_text, True, (255, 255, 255))
     

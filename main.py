@@ -38,10 +38,6 @@ def main():
     
     # Spawn initial gifts (BELANGRIJK!)
     spawn_multiple_gifts(world_matrix, amount=5)
-    
-    # check collisions with the blocks that exist
-    while any(p.get_world_hitbox().colliderect(b) for b in world_blocks):
-        p.pos.y -= 1
 
     while running:
         dt = clock.tick(60) / 1000
@@ -64,10 +60,6 @@ def main():
                 
                 # Spawn gifts again
                 spawn_multiple_gifts(world_matrix, amount=5)
-                
-                # Check collisions after regenerating blocks
-                while any(p.get_world_hitbox().colliderect(b) for b in world_blocks):
-                    p.pos.y -= 1
 
                 t = Timer(25)
 

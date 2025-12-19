@@ -18,6 +18,12 @@ class Player:
         self.sprite_size = self.submarine_image.get_size()
         self.speed = 3 
         self.facing_right = True
+        
+        # Momentum variabelen
+        self.velocity = Vector2(0, 0)
+        self.acceleration = 0.5  # Hoe snel je optrek
+        self.friction = 0.92     # Hoe snel je stopt (0.9-0.95 is realistisch)
+        self.max_speed = 3       # Maximum snelheid
 
     def draw(self):
         cam_x = max(0, min(self.pos.x - DISPLAY_WIDTH // 2, MAP_SIZE[0] - DISPLAY_WIDTH))
@@ -31,47 +37,80 @@ class Player:
     def process_key_input(self, block_list):
         pressed = key.get_pressed()
         
-        # simpele beweging - elke richting apart
+        # Versnelling op basis van input
+        input_x = 0
+        input_y = 0
+        
         if pressed[K_LEFT]:
-            self.move(-self.speed, 0, block_list)
+            input_x = -1
             self.facing_right = False
 
         if pressed[K_RIGHT]:
-            self.move(self.speed, 0, block_list)
+            input_x = 1
             self.facing_right = True
 
         if pressed[K_UP]:
-            self.move(0, -self.speed, block_list)
+            input_y = -1
 
         if pressed[K_DOWN]:
-            self.move(0, self.speed, block_list)
-
-        # blijf binnen map grenzen
+            input_y = 1
+        
+        # Pas velocity aan op basis van input
+        if input_x != 0:
+            self.velocity.x += input_x * self.acceleration
+        else:
+            # Wrijving toepassen als er geen input is
+            self.velocity.x *= self.friction
+        
+        if input_y != 0:
+            self.velocity.y += input_y * self.acceleration
+        else:
+            # Wrijving toepassen als er geen input is
+            self.velocity.y *= self.friction
+        
+        # Beperk snelheid tot maximum
+        if self.velocity.length() > self.max_speed:
+            self.velocity.scale_to_length(self.max_speed)
+        
+        # Stop volledig als snelheid heel klein is (voorkomt eeuwig doorglijden)
+        if abs(self.velocity.x) < 0.1:
+            self.velocity.x = 0
+        if abs(self.velocity.y) < 0.1:
+            self.velocity.y = 0
+        
+        # Beweeg met velocity
+        self.move(self.velocity.x, self.velocity.y, block_list)
+        
+        # Blijf binnen map grenzen
         self.pos.x = max(0, min(self.pos.x, MAP_SIZE[0] - self.sprite_size[0]))
         self.pos.y = max(0, min(self.pos.y, MAP_SIZE[1] - self.sprite_size[1]))
 
     def move(self, dx, dy, block_list):
-        # oude positie
-        old_x = self.pos.x
-        old_y = self.pos.y
+        # Beweeg horizontaal
+        if dx != 0:
+            old_x = self.pos.x
+            self.pos.x += dx
+            
+            # Check collision horizontaal
+            hitbox = self.get_world_hitbox()
+            for block in block_list:
+                if hitbox.colliderect(block):
+                    self.pos.x = old_x
+                    self.velocity.x = 0
+                    break
         
-        # Probeer te bewegen
-        self.pos.x += dx
-        self.pos.y += dy
-        
-        # Check collision
-        hitbox = self.get_world_hitbox()
-        
-        collision = False
-        for block in block_list:
-            if hitbox.colliderect(block):
-                collision = True
-                break
-        
-        # als collision, ga terug naar oude positie
-        if collision:
-            self.pos.x = old_x
-            self.pos.y = old_y
+        # Beweeg verticaal
+        if dy != 0:
+            old_y = self.pos.y
+            self.pos.y += dy
+            
+            # Check collision verticaal
+            hitbox = self.get_world_hitbox()
+            for block in block_list:
+                if hitbox.colliderect(block):
+                    self.pos.y = old_y
+                    self.velocity.y = 0
+                    break
 
     def get_world_hitbox(self):
         return Rect(
