@@ -16,6 +16,11 @@ def main():
 
     SPAWN_PACKAGE_EVENT = USEREVENT + 1
     time.set_timer(SPAWN_PACKAGE_EVENT, 5000)
+
+    elf_image = image.load("assets/Images/elf.png")
+    elf_image = transform.scale(elf_image, (64, 64))
+    elf_picked_up = False
+    has_won = False
     
     game_display = display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
     GAME_FONT1 = font.SysFont("New Times Roman", 70, font.Font.bold)
@@ -36,7 +41,7 @@ def main():
     world_matrix = m.generate_world()
     world_blocks = m.get_world_rects(world_matrix)
     
-    # Spawn initial gifts (BELANGRIJK!)
+    # Spawn initial gifts
     spawn_multiple_gifts(world_matrix, amount=5)
 
     while running:
@@ -49,7 +54,9 @@ def main():
             if t.time_left <= 0 and e.type == KEYDOWN and e.key == K_RETURN:
                 game_over = False
                 state = State()
-                reset_package_counter()  # RESET COUNTER!
+
+                # reset counter
+                reset_package_counter()
 
                 player_position = Vector2(START.x, START.y)
                 p = Player(player_position)
@@ -60,6 +67,9 @@ def main():
                 
                 # Spawn gifts again
                 spawn_multiple_gifts(world_matrix, amount=5)
+
+                elf_picked_up = False
+                has_won = False
 
                 t = Timer(25)
 
@@ -77,47 +87,56 @@ def main():
                 if t.time_left > 0:
                     # Spawn 1 nieuw pakje elke 5 seconden
                     spawn_gift_in_matrix(world_matrix)
-
+        
         # update
-        if t.time_left > 0:
+        if t.time_left > 0 and not has_won:
             p.process_key_input(world_blocks)
-            if p.pos.y <= 64 and t.time_left < t.max_time:
+            if p.pos.y <= CELL_SIZE and t.time_left < t.max_time:
                 t.refill()
             t.update(dt)
             
-            # CHECK COLLISION MET GIFTS! (DEZE REGEL ONTBRAK!)
+            # collision check met pakjes
             update_game_with_gifts(world_matrix, p, t, state)
 
-        # draw - WIS HET SCHERM EERST!
-        game_display.fill((0, 0, 0))  # DEZE REGEL TOEGEVOEGD - wis scherm met zwart
+        # draw 
+        game_display.fill((0, 0, 0))
         
         m.draw(world_blocks, world_matrix)
         
-        # GEBRUIK CAMERA POSITIE!
+        # camera positie
         camera_pos = m.tracking_player()
         draw_all_gifts(world_matrix, camera_pos)
 
-        if t.time_left > 0:
+        elf_picked_up, has_won = p.elf_system(elf_picked_up, elf_image, m)
+
+        if has_won:
+            text_surface1 = GAME_FONT1.render("You saved the elf!", True, (0, 250, 0))
+            GAME_DISPLAY.blit(text_surface1, (300, 300))
+        elif t.time_left > 0:
             p.draw()
-            state.render()
             t.render(GAME_DISPLAY)
+            pakjes_teller = GAME_FONT2.render(
+                f"Pakjes: {state.score}",
+                True, (0, 0, 0)
+            )
+            GAME_DISPLAY.blit(pakjes_teller, (10, 10))
         else:
-            text_surface1 = GAME_FONT1.render(
+            text_surface2 = GAME_FONT1.render(
                 "Game Over", True, (250, 0, 0)
             )
-            GAME_DISPLAY.blit(text_surface1, (355, 300))
+            GAME_DISPLAY.blit(text_surface2, (355, 300))
 
-            text_surface2 = GAME_FONT2.render(
+            text_surface3 = GAME_FONT2.render(
                 "Geen zuurstof! Druk ENTER om opnieuw te beginnen.",
                 True, (0, 0, 0)
             )
-            GAME_DISPLAY.blit(text_surface2, (225, 380))
+            GAME_DISPLAY.blit(text_surface3, (225, 380))
             
-            text_surface3 = GAME_FONT2.render(
+            text_surface4 = GAME_FONT2.render(
                 f"Aantal pakjes verzameld: {state.score}",
                 True, (0, 0, 0)
             )
-            game_display.blit(text_surface3, (380, 430))
+            game_display.blit(text_surface4, (380, 430))
             
             # Start gameover muziek
             if not game_over:

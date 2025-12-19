@@ -119,3 +119,27 @@ class Player:
             HITBOX_WIDTH,
             HITBOX_HEIGHT
         )
+    
+    def elf_system(self, elf_picked_up, elf_image, map_instance):
+        # Elf positie berekenen
+        elf_world_pos = Vector2(map_instance.elf_cell[1] * CELL_SIZE, map_instance.elf_cell[0] * CELL_SIZE)
+        elf_hitbox = Rect(elf_world_pos.x, elf_world_pos.y, CELL_SIZE, CELL_SIZE)
+        
+        # Check pickup
+        if not elf_picked_up and self.get_world_hitbox().colliderect(elf_hitbox):
+            elf_picked_up = True
+        
+        # Teken elf in wereld (als niet opgepikt)
+        if not elf_picked_up:
+            cam_x = max(0, min(self.pos.x - DISPLAY_WIDTH // 2, MAP_SIZE[0] - DISPLAY_WIDTH))
+            cam_y = max(0, min(self.pos.y - DISPLAY_HEIGHT // 2, MAP_SIZE[1] - DISPLAY_HEIGHT))
+            screen_pos = elf_world_pos - Vector2(cam_x, cam_y)
+            GAME_DISPLAY.blit(elf_image, screen_pos)
+        else:
+            # Teken elf rechtsboven in inventory
+            GAME_DISPLAY.blit(elf_image, (DISPLAY_WIDTH - 74, 10))
+        
+        # Check win
+        has_won = elf_picked_up and self.pos.y < CELL_SIZE
+        
+        return elf_picked_up, has_won

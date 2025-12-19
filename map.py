@@ -7,6 +7,7 @@ class Map():
         bg_image = image.load("assets/Images/achtergrond gradient.png").convert()
         self.background_image = transform.scale(bg_image, MAP_SIZE)
         self.player = player
+        self.elf_cell = [ROWS-1,0]
 
     def tracking_player(self):
         x = max(0, min(MAP_SIZE[0] - DISPLAY_WIDTH, self.player.pos.x - DISPLAY_WIDTH // 2))
@@ -104,4 +105,5 @@ class Map():
                 digger_col += 1
                 world_matrix[digger_row][digger_col] = water
         
+        self.elf_cell[1] = digger_col
         return world_matrix
