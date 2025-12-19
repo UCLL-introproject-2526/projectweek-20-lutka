@@ -46,7 +46,7 @@ def spawn_gift_in_matrix(world_matrix):
     return False
 
 # spawn meerdere gifts
-def spawn_multiple_gifts(world_matrix, amount=10):
+def spawn_multiple_gifts(world_matrix, amount=20):
     spawned = 0
     for _ in range(amount):
         if spawn_gift_in_matrix(world_matrix):

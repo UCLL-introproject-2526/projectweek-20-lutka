@@ -44,7 +44,7 @@ def main():
     arrow = ArrowIndicator()
     
     # Spawn initial gifts
-    spawn_multiple_gifts(world_matrix, amount=5)
+    spawn_multiple_gifts(world_matrix, amount=25)
 
     while running:
         dt = clock.tick(60) / 1000
