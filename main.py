@@ -9,10 +9,9 @@ from arrow import *
 
 def main():
     init()
-    
     # Background muziek met volume (0.0 == geen geluid) (1.0 == volledige geluid)
     mixer.music.load("assets/Sounds/background_music.mp3")
-    mixer.music.set_volume(0.5) 
+    mixer.music.set_volume(0.5)
     mixer.music.play(-1)
 
     SPAWN_PACKAGE_EVENT = USEREVENT + 1
@@ -24,19 +23,22 @@ def main():
     has_won = False
     
     game_display = display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+    start_bg = image.load("assets/Images/startscherm.png").convert()
+    start_bg = transform.scale(start_bg, DISPLAY_SIZE)
     GAME_FONT1 = font.SysFont("New Times Roman", 70, font.Font.bold)
     GAME_FONT2 = font.SysFont("Arial", 30)
     clock = time.Clock()
-    
+
     state = State()
     running = True
     game_over = False
     t = Timer(25)
+    game_started = False
 
     # Player
     player_position = Vector2(START.x, START.y)
     p = Player(player_position)
-    
+
     # Map generate before checking collisions
     m = Map(p)
     world_matrix = m.generate_world()
@@ -48,10 +50,12 @@ def main():
 
     while running:
         dt = clock.tick(60) / 1000
-        
+
         for e in event.get():
             if e.type == QUIT:
                 running = False
+            if not game_started and e.type == KEYDOWN and e.key == K_RETURN:
+                game_started = True
 
             if t.time_left <= 0 and e.type == KEYDOWN and e.key == K_RETURN:
                 game_over = False
@@ -66,7 +70,7 @@ def main():
                 m = Map(p)
                 world_matrix = m.generate_world()
                 world_blocks = m.get_world_rects(world_matrix)
-                
+
                 # Spawn gifts again
                 spawn_multiple_gifts(world_matrix, amount=5)
 
@@ -77,13 +81,13 @@ def main():
 
                 # Herstart timers
                 time.set_timer(SPAWN_PACKAGE_EVENT, 5000)
-                
+
                 # Herstart background muziek
                 mixer.music.stop()
                 mixer.music.load("assets/Sounds/background_music.mp3")
-                mixer.music.set_volume(0.5) 
+                mixer.music.set_volume(0.5)
                 mixer.music.play(-1)
-            
+
             # Only handle timer events if game is running
             if e.type == SPAWN_PACKAGE_EVENT:
                 if t.time_left > 0:
@@ -91,7 +95,7 @@ def main():
                     spawn_gift_in_matrix(world_matrix)
         
         # update
-        if t.time_left > 0 and not has_won:
+        if game_started and t.time_left > 0 and not has_won:
             p.process_key_input(world_blocks)
             if p.pos.y <= CELL_SIZE and t.time_left < t.max_time:
                 t.refill()
@@ -103,12 +107,19 @@ def main():
             # collision check met pakjes
             update_game_with_gifts(world_matrix, p, t, state)
 
-        # draw 
-        game_display.fill((0, 0, 0))
-        
+        # draw - WIS HET SCHERM EERST!
+        game_display.fill((0, 0, 0))  # DEZE REGEL TOEGEVOEGD - wis scherm met zwart
+        if not game_started:
+            game_display.blit(start_bg, (0, 0))
+
+            text = GAME_FONT2.render("Druk ENTER om te starten", True, (255, 255, 255))
+            game_display.blit(text, (SCREEN_WIDTH // 2 - 150, 500))
+
+            display.flip()
+            continue
         m.draw(world_blocks, world_matrix)
-        
-        # camera positie
+
+        # GEBRUIK CAMERA POSITIE!
         camera_pos = m.tracking_player()
         draw_all_gifts(world_matrix, camera_pos)
 
@@ -158,11 +169,12 @@ def main():
             # Start gameover muziek
             if not game_over:
                 mixer.music.stop()
-                mixer.music.load('assets/Sounds/gameover.mp3')
+                mixer.music.load("assets/Sounds/gameover.mp3")
                 mixer.music.set_volume(1)
                 mixer.music.play(0)
                 game_over = True
-        
-        display.flip()    
+
+        display.flip()
+
 
 main()
