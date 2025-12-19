@@ -203,16 +203,16 @@ def main():
             GAME_DISPLAY.blit(text_surface2, (355, 300))
 
             text_surface3 = GAME_FONT2.render(
-                "No oxygen left! Press enter to start again.",
+                "No oxygen left! Press enter to go back to the main menu.",
                 True, (0, 0, 0)
             )
-            GAME_DISPLAY.blit(text_surface3, (225, 380))
+            GAME_DISPLAY.blit(text_surface3, (270, 380))
             
             text_surface4 = GAME_FONT2.render(
                 f"Aantal pakjes verzameld: {state.score}",
                 True, (0, 0, 0)
             )
-            game_display.blit(text_surface4, (380, 430))
+            game_display.blit(text_surface4, (350, 430))
 
             arrow.deactivate()
             
