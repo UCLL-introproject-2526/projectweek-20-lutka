@@ -24,7 +24,7 @@ def main():
     
     game_display = display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
     start_bg = image.load("assets/Images/startscherm.png").convert()
-    start_bg = transform.scale(start_bg, DISPLAY_SIZE)
+    start_bg = transform.scale(start_bg, (SCREEN_WIDTH, SCREEN_HEIGHT))
     GAME_FONT1 = font.SysFont("New Times Roman", 70, font.Font.bold)
     GAME_FONT2 = font.SysFont("Arial", 30)
     clock = time.Clock()
@@ -34,6 +34,9 @@ def main():
     game_over = False
     t = Timer(25)
     game_started = False
+    start_screen_timer = 0  # Timer voor startscherm
+    win_screen_timer = 0  # Timer voor win scherm
+    elf_just_picked_up = False  # Flag om te tracken of elf net is opgepakt
 
     # Player
     player_position = Vector2(START.x, START.y)
@@ -59,6 +62,7 @@ def main():
 
             if t.time_left <= 0 and e.type == KEYDOWN and e.key == K_RETURN:
                 game_over = False
+                game_started = False
                 state = State()
 
                 # reset counter
@@ -78,6 +82,10 @@ def main():
                 has_won = False
 
                 t = Timer(25)
+                
+                # Reset start screen timer
+                start_screen_timer = 0
+                win_screen_timer = 0
 
                 # Herstart timers
                 time.set_timer(SPAWN_PACKAGE_EVENT, 5000)
@@ -90,25 +98,65 @@ def main():
 
             # Only handle timer events if game is running
             if e.type == SPAWN_PACKAGE_EVENT:
-                if t.time_left > 0:
+                if t.time_left > 0 and not elf_picked_up:  # Stop spawning als elf is opgepakt
                     # Spawn 1 nieuw pakje elke 5 seconden
                     spawn_gift_in_matrix(world_matrix)
         
+        # Update start screen timer BUITEN event loop - ALLEEN voor win scherm
+        # Startscherm start NIET automatisch, alleen met ENTER
+        
+        # Update win screen timer - ALLEEN als je daadwerkelijk hebt gewonnen
+        if has_won and game_started:
+            win_screen_timer += dt
+            if win_screen_timer >= 5.0:
+                # Reset naar startscherm
+                game_started = False
+                has_won = False
+                game_over = False
+                state = State()
+                reset_package_counter()
+                
+                player_position = Vector2(START.x, START.y)
+                p = Player(player_position)
+                
+                m = Map(p)
+                world_matrix = m.generate_world()
+                world_blocks = m.get_world_rects(world_matrix)
+                
+                spawn_multiple_gifts(world_matrix, amount=25)
+                
+                elf_picked_up = False
+                t = Timer(25)
+                start_screen_timer = 0
+                win_screen_timer = 0
+                
+                time.set_timer(SPAWN_PACKAGE_EVENT, 2000)
+                
+                mixer.music.stop()
+                mixer.music.load("assets/Sounds/background_music.mp3")
+                mixer.music.set_volume(0.5)
+                mixer.music.play(-1)
+        
         # update
-        if game_started and t.time_left > 0 and not has_won:
+        if game_started and not has_won and t.time_left > 0:
             p.process_key_input(world_blocks)
-            if p.pos.y <= CELL_SIZE and t.time_left < t.max_time:
+            
+            # Alleen auto-refill als de elf nog NIET is opgepakt
+            if p.pos.y <= CELL_SIZE and t.time_left < t.max_time and not elf_picked_up:
                 t.refill()
-            t.update(dt)
             
-            # Update arrow timer
-            arrow.update(dt)
+            # Update arrow timer - ALLEEN als elf nog niet is opgepakt
+            if not elf_picked_up:
+                arrow.update(dt)
             
-            # collision check met pakjes
+            # collision check met pakjes - VOOR oxygen update
             update_game_with_gifts(world_matrix, p, t, state)
+            
+            # Update oxygen ALTIJD NA gift collision (ook als elf is opgepakt)
+            t.update(dt)
 
         # draw - WIS HET SCHERM EERST!
-        game_display.fill((0, 0, 0))  # DEZE REGEL TOEGEVOEGD - wis scherm met zwart
+        game_display.fill((0, 0, 0))
         if not game_started:
             game_display.blit(start_bg, (0, 0))
 
@@ -125,9 +173,11 @@ def main():
 
         elf_picked_up, has_won = p.elf_system(elf_picked_up, elf_image, m)
 
-        # Activeer pijl EENMALIG zodra elf wordt opgepakt
+        # Activeer pijl EENMALIG zodra elf wordt opgepakt EN vul oxygen volledig aan
         if elf_picked_up and not has_won and not arrow.active:
             arrow.activate()
+            t.time_left = t.max_time  # Vul oxygen volledig aan wanneer elf wordt opgepakt
+            elf_just_picked_up = True
 
         if has_won:
             text_surface1 = GAME_FONT1.render("You saved the elf!", True, (0, 250, 0))
